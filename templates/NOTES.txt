@@ -1,0 +1,7 @@
+Try the folling for checking status :
+
+$ kubectl get clusterissuers
+
+or
+
+$ kubectl get issuers --namespace={{ $.Release.Namespace }}
