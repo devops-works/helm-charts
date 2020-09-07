@@ -4,7 +4,7 @@
 {{- range $issuer := .Values.issuers }}
 {{ $issuer_email := .email | default $default_email }}
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: {{ .kind }}
 metadata:
   name: {{ .name }}
