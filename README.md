@@ -6,7 +6,7 @@ This helm chart create issuers for [cert-manager](https://cert-manager.io/).
 
 |Parameter|Description|Default|
 |:---|:---|:---|
-|email|Default register email|null|
+|email|Default register email|null (required)|
 |issuer|Cert-manager issuer configuration|{}|
 
 ## Issuer configuration
