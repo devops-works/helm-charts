@@ -5,7 +5,7 @@ Need to trunc 63 chars :
 - https://stackoverflow.com/questions/32290167/what-is-the-maximum-length-of-a-dns-name#32294443
 - https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set
 */}}
-{{- define "cluster-issuer.name" -}}
+{{- define "cert-manager-issuer.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -14,7 +14,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "cluster-issuer.fullname" -}}
+{{- define "cert-manager-issuer.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -30,6 +30,6 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "cluster-issuer.chart" -}}
+{{- define "cert-manager-issuer.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}

@@ -1,14 +1,14 @@
 ---
 email: null
 
-issuers: {}
-  # - kind: ClusterIssuer
-  #   name: letsencrypt-staging
-  #   server: https://acme-staging-v02.api.letsencrypt.org/directory
-  #   method:
-  #     - http01:
-  #         ingress:
-  #           class: nginx
+issuers:
+  - kind: ClusterIssuer
+    name: letsencrypt-staging
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    method:
+      - http01:
+          ingress:
+            class: nginx
   # - kind: ClusterIssuer
   #   name: letsencrypt-prod
   #   server: https://acme-v02.api.letsencrypt.org/directory

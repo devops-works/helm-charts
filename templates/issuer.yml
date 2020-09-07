@@ -10,8 +10,8 @@ metadata:
   name: {{ .name }}
   namespace: {{ $.Release.Namespace | quote }}
   labels:
-    app: {{ template "cluster-issuer.name" $ }}
-    chart: {{ template "cluster-issuer.chart" $ }}
+    app: {{ template "cert-manager-issuer.name" $ }}
+    chart: {{ template "cert-manager-issuer.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
 spec:
