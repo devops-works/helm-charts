@@ -8,7 +8,9 @@ apiVersion: cert-manager.io/v1
 kind: {{ .kind }}
 metadata:
   name: {{ .name }}
+  {{ if not (.kind | contains "ClusterIssuer") -}}
   namespace: {{ $.Release.Namespace | quote }}
+  {{ end -}}
   labels:
     app: {{ template "cert-manager-issuer.name" $ }}
     chart: {{ template "cert-manager-issuer.chart" $ }}
