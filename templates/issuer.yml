@@ -1,0 +1,32 @@
+{{- $default_email := .Values.email -}}
+{{- $release := .Release -}}
+
+{{- range $issuer := .Values.issuers }}
+{{ $issuer_email := .email | default $default_email }}
+---
+apiVersion: cert-manager.io/v1
+kind: {{ .kind }}
+metadata:
+  name: {{ .name }}
+  {{ if not (.kind | contains "ClusterIssuer") -}}
+  namespace: {{ $.Release.Namespace | quote }}
+  {{ end -}}
+  labels:
+    app: {{ template "cert-manager-issuer.name" $ }}
+    chart: {{ template "cert-manager-issuer.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+  acme:
+    # You must replace this email address with your own.
+    # Let's Encrypt will use this to contact you about expiring
+    # certificates, and issues related to your account.
+    email: {{ required "email is required" $issuer_email }}
+    server: {{ .server }}
+    privateKeySecretRef:
+      # Secret resource that will be used to store the account's private key.
+      name: {{ .name }}-issuer-account-key
+    solvers:
+      {{- toYaml .method | nindent 6 }}
+
+{{- end }}

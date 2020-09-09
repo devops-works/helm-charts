@@ -1,0 +1,21 @@
+---
+email: null
+
+issuers:
+  - kind: ClusterIssuer
+    name: letsencrypt-staging
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    method:
+      - http01:
+          ingress:
+            class: nginx
+  # - kind: ClusterIssuer
+  #   name: letsencrypt-prod
+  #   server: https://acme-v02.api.letsencrypt.org/directory
+  #   method:
+  #     - dns01:
+  #       clouddns:
+  #         project: PROJECT_ID
+  #         serviceAccountSecretRef:
+  #           name: clouddns-dns01-solver-svc-acct
+  #           key: key.json
