@@ -1,0 +1,13 @@
+apiVersion: v1
+appVersion: "v0.0.0"
+description: A Helm chart for echoip - a simple service for looking up your IP address
+name: echoip
+home: https://github.com/mpolden/echoip/
+sources:
+  - https://github.com/mpolden/echoip/
+version: 1.0.0
+maintainers:
+- name: devopsworks
+  email: support@devops.works
+- name: cleming
+  email: cg+code@devops.works
