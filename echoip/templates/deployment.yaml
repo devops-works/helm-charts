@@ -38,3 +38,6 @@ spec:
               port: http
             initialDelaySeconds: {{ .Values.livenessProbe.delay }}
             periodSeconds: {{ .Values.livenessProbe.period }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+
