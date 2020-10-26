@@ -1,0 +1,11 @@
+apiVersion: v1
+appVersion: "v0.0.0"
+description: A Helm chart for cyberchef - the Cyber Swiss Army Knife web app for encryption, encoding, compression and data analysis.
+name: cyberchef
+home: https://github.com/gchq/CyberChef/
+sources:
+  - https://github.com/gchq/CyberChef/
+version: 1.0.0
+maintainers:
+- name: devopsworks
+  email: support@devops.works
