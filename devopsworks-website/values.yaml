@@ -1,0 +1,68 @@
+# Default values for simple-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+strategy:
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+
+image:
+  repository: registry.gitlab.com/devopsworks/devopsworks_website
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "ft-bootstrap-upgrade-mods"
+
+imagePullSecrets:
+  - name: regcred
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "{{- .Environment.Values.cluster.ingress_class }}"
+    # cert-manager.io/cluster-issuer: "{{- .Environment.Values.cluster.cluster_issuer }}"
+    # external-dns.alpha.kubernetes.io/hostname: "test-dw.loc.{{- .Environment.Values.cluster.domain }}"
+    # external-dns.alpha.kubernetes.io/target: "dw.loc.{{- .Environment.Values.cluster.domain }}" # A modifier
+    # external-dns.alpha.kubernetes.io/ttl: "60"
+  hosts:
+    - host: "dw.loc.{{- .Environment.Values.cluster.domain }}"
+      paths:
+        - /
+  # tls:
+  #   - secretName: "dw.loc-{{- .Environment.Values.cluster.cluster_issuer }}-tls"
+  #     hosts:
+  #       - "dw.loc.{{- .Environment.Values.cluster.domain }}"
+
+resources:
+  requests:
+    memory: "10Mi"
+    cpu: "25m"
+  limits:
+    memory: "20Mi"
+    cpu: "50m"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
