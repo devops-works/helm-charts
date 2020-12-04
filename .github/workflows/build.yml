@@ -1,0 +1,60 @@
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '*/**'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: package dworks charts
+        run: |
+          mkdir -p ${{ runner.temp }}/packages 
+          ar_charts=$(find . -mindepth 1 -maxdepth 1 -type d \( ! -name .\* \) \( ! -name tmp \) -printf '%f ')
+          for dir in ${ar_charts}; do
+            if helm package --dependency-update --destination ${{ runner.temp }}/packages "$dir"; then
+              echo "✅ built dependencies and packaged $dir"
+            else
+              echo "❌ unable to build dependencies for $dir"
+              exit 1
+            fi
+          done
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dworks-packages
+          path: ${{ runner.temp }}/packages/
+
+  release:
+    needs:
+      - package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+      - name: configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - uses: actions/download-artifact@v2
+        with:
+          name: dworks-packages
+          path: ${{ runner.temp }}/packages
+      - name: create index of dworks charts
+        run: |
+          if helm repo index --url https://github.com/devops-works/helm-charts --merge index.yaml ${{ runner.temp }}; then
+            echo "✅ index updated"
+            mv -f ${{ runner.temp }}/index.yaml index.yaml
+            git add index.yaml
+          else
+            echo "❌ unable to update index"
+            exit 1
+          fi
+          mkdir -p packages
+          cp -f ${{ runner.temp }}/packages/*.tgz packages
+          git add packages/*.tgz
+          git commit --signoff -m "Push packages & index [ci skip]"
+          git push
