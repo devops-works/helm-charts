@@ -3,6 +3,11 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+strategy:
+  rollingUpdate:
+    enabled: true
+    maxSurge: 1
+    maxUnavailable: 1
 
 image:
   repository: registry.gitlab.com/devopsworks/devopsworks_website
@@ -14,15 +19,6 @@ imagePullSecrets:
   - name: regcred
 nameOverride: ""
 fullnameOverride: ""
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
 
 podAnnotations: {}
 
@@ -65,13 +61,6 @@ resources:
   limits:
     memory: "20Mi"
     cpu: "50m"
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 

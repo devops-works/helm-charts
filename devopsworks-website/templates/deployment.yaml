@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "devopsworks-website.labels" . | nindent 4 }}
 spec:
-{{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-{{- end }}
   selector:
     matchLabels:
       {{- include "devopsworks-website.selectorLabels" . | nindent 6 }}
@@ -24,9 +22,12 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "devopsworks-website.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.strategy }}
+      strategy:
+        {{- toYaml .Values.strategy | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
