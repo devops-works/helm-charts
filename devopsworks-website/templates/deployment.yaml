@@ -6,6 +6,10 @@ metadata:
     {{- include "devopsworks-website.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  {{- if .Values.strategy }}
+  strategy:
+    {{- toYaml .Values.strategy | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "devopsworks-website.selectorLabels" . | nindent 6 }}
@@ -24,10 +28,6 @@ spec:
       {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if .Values.strategy }}
-      strategy:
-        {{- toYaml .Values.strategy | nindent 8 }}
-      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
