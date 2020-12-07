@@ -1,0 +1,59 @@
+apiVersion: v1
+entries:
+  cert-manager-issuer:
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2020-12-07T14:03:54.56274855Z"
+    description: A Helm chart for creating cluster issuers
+    digest: b529017499d86a76c7b3c8a630f2e69142a85cb69198ceb04412227eb1815eb2
+    name: cert-manager-issuer
+    type: application
+    urls:
+    - https://github.com/devops-works/helm-charts/packages/cert-manager-issuer-0.1.0.tgz
+    version: 0.1.0
+  cyberchef:
+  - apiVersion: v1
+    appVersion: v0.0.0
+    created: "2020-12-07T14:03:54.563780067Z"
+    description: A Helm chart for cyberchef - the Cyber Swiss Army Knife web app for
+      encryption, encoding, compression and data analysis.
+    digest: 3c83c2e60bff4ccb36710f6ef94c787602d42b030d018f4305442c5c15358cc0
+    home: https://github.com/gchq/CyberChef/
+    maintainers:
+    - email: support@devops.works
+      name: devopsworks
+    name: cyberchef
+    sources:
+    - https://github.com/gchq/CyberChef/
+    urls:
+    - https://github.com/devops-works/helm-charts/packages/cyberchef-1.0.0.tgz
+    version: 1.0.0
+  devopsworks-website:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2020-12-07T14:03:54.564349976Z"
+    description: DevOps.Works website helm chart
+    digest: ccc54916d29c4948ea64c92e872df906f57d0346d2ddcaa1769be5af4c927ece
+    name: devopsworks-website
+    type: application
+    urls:
+    - https://github.com/devops-works/helm-charts/packages/devopsworks-website-0.1.0.tgz
+    version: 0.1.0
+  echoip:
+  - apiVersion: v1
+    appVersion: v0.0.0
+    created: "2020-12-07T14:03:54.564824984Z"
+    description: A Helm chart for echoip - a simple service for looking up your IP
+      address
+    digest: e1f1ec27d5e7c570643015de9afbc22d8cb40b8c059807d78814170cd8a93fbf
+    home: https://github.com/mpolden/echoip/
+    maintainers:
+    - email: support@devops.works
+      name: devopsworks
+    name: echoip
+    sources:
+    - https://github.com/mpolden/echoip/
+    urls:
+    - https://github.com/devops-works/helm-charts/packages/echoip-1.0.0.tgz
+    version: 1.0.0
+generated: "2020-12-07T14:03:54.562201241Z"
