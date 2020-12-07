@@ -45,7 +45,7 @@ jobs:
           path: ${{ runner.temp }}/packages
       - name: create index of dworks charts
         run: |
-          if helm repo index --url https://github.com/devops-works/helm-charts --merge index.yaml ${{ runner.temp }}; then
+          if helm repo index --url https://devops-works.github.io/helm-charts --merge index.yaml ${{ runner.temp }}; then
             echo "✅ index updated"
             mv -f ${{ runner.temp }}/index.yaml index.yaml
             git add index.yaml
