@@ -3,21 +3,21 @@ entries:
   cert-manager-issuer:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2020-12-07T14:06:34.617240225Z"
+    created: "2020-12-07T14:16:58.423489382Z"
     description: A Helm chart for creating cluster issuers
-    digest: 6c1a5f5f07b7f9b16f6ec5b6c570a2677b8947c0ec5f7c9a91323c6b293944c5
+    digest: 43429437bd4ea34b93c4e744e5a88279b0123caf0260d353af72b06c348587c3
     name: cert-manager-issuer
     type: application
     urls:
-    - https://github.com/devops-works/helm-charts/packages/cert-manager-issuer-0.1.0.tgz
+    - https://devops-works.github.io/helm-charts/packages/cert-manager-issuer-0.1.0.tgz
     version: 0.1.0
   cyberchef:
   - apiVersion: v1
     appVersion: v0.0.0
-    created: "2020-12-07T14:06:34.617670125Z"
+    created: "2020-12-07T14:16:58.424233183Z"
     description: A Helm chart for cyberchef - the Cyber Swiss Army Knife web app for
       encryption, encoding, compression and data analysis.
-    digest: 42d2a5852340dafdc9432d3be518ef3f55ec58a8d6a9657f1121c8fa8e4a4743
+    digest: 1c19f7664343203d90b62e83106fae4723e2256bbd915335f6c0e413d869035e
     home: https://github.com/gchq/CyberChef/
     maintainers:
     - email: support@devops.works
@@ -26,26 +26,26 @@ entries:
     sources:
     - https://github.com/gchq/CyberChef/
     urls:
-    - https://github.com/devops-works/helm-charts/packages/cyberchef-1.0.0.tgz
+    - https://devops-works.github.io/helm-charts/packages/cyberchef-1.0.0.tgz
     version: 1.0.0
   devopsworks-website:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2020-12-07T14:06:34.618186324Z"
+    created: "2020-12-07T14:16:58.425015185Z"
     description: DevOps.Works website helm chart
-    digest: 17c5be792e9dbeb61333ff0200d29eb7234546eef9f7ecf282e832335847b48f
+    digest: 72f42b959cbc50be0a048b20102f08851e0de712ff8a034ee2d5c32f2c217a38
     name: devopsworks-website
     type: application
     urls:
-    - https://github.com/devops-works/helm-charts/packages/devopsworks-website-0.1.0.tgz
+    - https://devops-works.github.io/helm-charts/packages/devopsworks-website-0.1.0.tgz
     version: 0.1.0
   echoip:
   - apiVersion: v1
     appVersion: v0.0.0
-    created: "2020-12-07T14:06:34.618570924Z"
+    created: "2020-12-07T14:16:58.432925101Z"
     description: A Helm chart for echoip - a simple service for looking up your IP
       address
-    digest: 273e080e99eeed1723be60cd4cbb47303d0cb5245223ff690cb1ebd793c0b35c
+    digest: f90409c85e1e5669363b6707125d71ba135c1535ae7537c617a4bfaaab7a9aeb
     home: https://github.com/mpolden/echoip/
     maintainers:
     - email: support@devops.works
@@ -54,6 +54,6 @@ entries:
     sources:
     - https://github.com/mpolden/echoip/
     urls:
-    - https://github.com/devops-works/helm-charts/packages/echoip-1.0.0.tgz
+    - https://devops-works.github.io/helm-charts/packages/echoip-1.0.0.tgz
     version: 1.0.0
-generated: "2020-12-07T14:06:34.562692569Z"
+generated: "2020-12-07T14:16:58.42269068Z"
