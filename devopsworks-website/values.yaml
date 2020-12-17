@@ -1,4 +1,4 @@
-# Default values for simple-app.
+# Default values.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -9,13 +9,13 @@ strategy:
     maxUnavailable: 1
 
 image:
-  repository: registry.gitlab.com/devopsworks/devopsworks_website
+  repository: nginx
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "ft-bootstrap-upgrade-mods"
+  tag: ""
 
-imagePullSecrets:
-  - name: regcred
+# imagePullSecrets:
+#   - name: regcred
 nameOverride: ""
 fullnameOverride: ""
 
@@ -37,21 +37,21 @@ service:
   port: 80
 
 ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: "{{- .Environment.Values.cluster.ingress_class }}"
-    # cert-manager.io/cluster-issuer: "{{- .Environment.Values.cluster.cluster_issuer }}"
-    # external-dns.alpha.kubernetes.io/hostname: "test-dw.loc.{{- .Environment.Values.cluster.domain }}"
-    # external-dns.alpha.kubernetes.io/target: "dw.loc.{{- .Environment.Values.cluster.domain }}" # A modifier
-    # external-dns.alpha.kubernetes.io/ttl: "60"
-  hosts:
-    - host: "dw.loc.{{- .Environment.Values.cluster.domain }}"
-      paths:
-        - /
+  enabled: false
+  annotations: {}
+  #  kubernetes.io/ingress.class: "nginx"
+  #  cert-manager.io/cluster-issuer: "le-prod"
+  #  external-dns.alpha.kubernetes.io/hostname: "test-dw.loc.local.domain"
+  #  external-dns.alpha.kubernetes.io/target: "dw.loc.local.domain"
+  #  external-dns.alpha.kubernetes.io/ttl: "60"
+  hosts: []
+  #  - host: "dw.loc.local.domain"
+  #    paths:
+  #      - /
   # tls:
-  #   - secretName: "dw.loc-{{- .Environment.Values.cluster.cluster_issuer }}-tls"
+  #   - secretName: "dw-loc-le-prod-tls"
   #     hosts:
-  #       - "dw.loc.{{- .Environment.Values.cluster.domain }}"
+  #       - "dw.loc.local.domain"
 
 resources:
   requests:
