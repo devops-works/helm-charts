@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+    config.yaml: {{ toYaml .Values.targets | indent 8}}
+    
+metadata:
+    labels:
+        app: scan-exporter # utiliser nom templatisé (helper)
+    name: scan-exporter-config
