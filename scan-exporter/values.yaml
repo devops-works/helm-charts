@@ -2,10 +2,11 @@ scanexporter:
     name: scan-exporter
     replicaCount: 1
     liveness:
+        initialDelay: 20
         period: 3
         path: /health
     container:
-        image: devopsworks/scan-exporter:0.6.2
+        image: devopsworks/scan-exporter:0.6.3
         port: 2112
 
 redis:
@@ -24,18 +25,17 @@ podMonitor:
     enabled: false
     path: /metrics
 
-#  Add targets to scan-exporter by uncommenting this section. 
 targets: |-
-         targets:       
+         targets:
              - name: "app1"
-               ip: "128.66.0.1"
+               ip: "198.51.100.1"
                workers: 750
                tcp:
                  period: "10s"
                  range: "reserved"
                  expected: "53"
              - name: "app2"
-               ip: "128.66.0.2"
+               ip: "198.51.100.2"
                workers: 1000
                tcp:
                  period: "1m"
