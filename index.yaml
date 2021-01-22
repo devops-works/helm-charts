@@ -3,9 +3,9 @@ entries:
   cert-manager-issuer:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2021-01-19T14:32:58.996601427Z"
+    created: "2021-01-22T14:18:49.20902906Z"
     description: A Helm chart for creating cluster issuers
-    digest: f3f5b5c31a625b7c9a6707eeb6d26aec34795114f52380b49d7dc08cfebfd32a
+    digest: 13bf5b83cf7d36e9d7488b68c2b3c233ca0fa494a9987a448e4ca63ab18f1dee
     name: cert-manager-issuer
     type: application
     urls:
@@ -14,10 +14,10 @@ entries:
   cyberchef:
   - apiVersion: v1
     appVersion: v0.0.0
-    created: "2021-01-19T14:32:58.997628334Z"
+    created: "2021-01-22T14:18:49.209477965Z"
     description: A Helm chart for cyberchef - the Cyber Swiss Army Knife web app for
       encryption, encoding, compression and data analysis.
-    digest: 3e36701747d64729560986c4cf7202848bc530be19e732dab806175e70e13138
+    digest: 0b90ef205bb25e6b5f2596753bc1165090d76ca496ac33b113beaa4e1814ce95
     home: https://github.com/gchq/CyberChef/
     maintainers:
     - email: support@devops.works
@@ -31,9 +31,9 @@ entries:
   devopsworks-website:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2021-01-19T14:32:58.998121037Z"
+    created: "2021-01-22T14:18:49.209925571Z"
     description: DevOps.Works website helm chart
-    digest: d385973271945a3d8d7e03c10f48b529a4d58ac2cdc1dd92c33e4451817c2050
+    digest: 446649244e92f6312f04c993e48663d93a4678949426ffb40eac9396ecfb4bdf
     name: devopsworks-website
     type: application
     urls:
@@ -42,10 +42,10 @@ entries:
   echoip:
   - apiVersion: v1
     appVersion: v0.0.0
-    created: "2021-01-19T14:32:58.998771441Z"
+    created: "2021-01-22T14:18:49.210323876Z"
     description: A Helm chart for echoip - a simple service for looking up your IP
       address
-    digest: 7bd2632728953fbf0a0c4bb0d5dc893bf9d3307042d656883f2c79d9cbc1bd7c
+    digest: 589742004545270513c116c3a102e3d7c1559ba5a5b64c5b9af6e356f68b526c
     home: https://github.com/mpolden/echoip/
     maintainers:
     - email: support@devops.works
@@ -58,14 +58,10 @@ entries:
     version: 1.0.0
   scan-exporter-chart:
   - apiVersion: v2
-    appVersion: v0.0.0
-    created: "2021-01-19T14:32:59.003797774Z"
-    dependencies:
-    - name: redis
-      repository: https://charts.bitnami.com/bitnami
-      version: 11.2.1
+    appVersion: v1.0.0
+    created: "2021-01-22T14:18:49.210845082Z"
     description: A Helm chart to deploy scan-exporter in Kubernetes
-    digest: 0bce68739cd998ac967ba7b825ef1be752d6086ea2011cae83c8400784ca59ab
+    digest: b2374410b7c7b97a071eb71b167b374b5a90fba781ec9cd6956582c00458f21d
     home: https://github.com/devops-works/scan-exporter
     maintainers:
     - email: support@devops.works
@@ -79,4 +75,4 @@ entries:
     urls:
     - https://devops-works.github.io/helm-charts/packages/scan-exporter-chart-1.0.0.tgz
     version: 1.0.0
-generated: "2021-01-19T14:32:58.995793322Z"
+generated: "2021-01-22T14:18:49.202927985Z"
