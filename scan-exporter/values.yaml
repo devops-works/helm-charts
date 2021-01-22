@@ -6,17 +6,15 @@ scanexporter:
         period: 3
         path: /health
     container:
-        image: devopsworks/scan-exporter:0.6.3
+        image: devopsworks/scan-exporter:1.0.0
         port: 2112
-
-redis:
-    name: redis
-    usePassword: false
-    replicaCount: 1
-    db: 0
-    container:
-        image: redis:latest
-        port: 6379
+    resources:
+        requests:
+            memory: "100Mi"
+            cpu: "200m"
+        limits:
+            memory: "150Mi"
+            cpu: "375m"
 
 nameOverride: ""
 fullnameOverride: ""
@@ -26,17 +24,17 @@ podMonitor:
     path: /metrics
 
 targets: |-
+         timeout: 2
+         limit: 1024
          targets:
              - name: "app1"
                ip: "198.51.100.1"
-               workers: 750
                tcp:
                  period: "10s"
                  range: "reserved"
                  expected: "53"
              - name: "app2"
                ip: "198.51.100.2"
-               workers: 1000
                tcp:
                  period: "1m"
                  range: "all"
