@@ -31,11 +31,9 @@ spec:
                       initialDelaySeconds: {{ .Values.scanexporter.liveness.initialDelay }}
                       periodSeconds: {{ .Values.scanexporter.liveness.period }}
                   ports:
-                      - containerPort:
-                            {{ .Values.scanexporter.container.port }}
+                      - name: metrics 
+                        containerPort: {{ .Values.scanexporter.container.port }}
             volumes:
               - name: config
                 configMap:
                     name: scan-exporter-config
-            imagePullSecrets:
-                - name: {{ .Values.scanexporter.secrets }}
