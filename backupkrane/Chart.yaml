@@ -1,0 +1,6 @@
+apiVersion: v2
+name: backupkrane
+description: A Helm chart for backup-krane
+type: application
+version: 0.0.1
+appVersion: 1.0.1

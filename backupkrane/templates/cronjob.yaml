@@ -1,0 +1,43 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "backupkrane.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "backupkrane.name" . }}
+    helm.sh/chart: {{ include "backupkrane.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    devops.works/customer: {{ .Values.customer }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  schedule: {{ .Values.pollFrequency | quote }}
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
+      ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
+      template:
+        spec:
+          containers:
+            - name: backupkrane
+              image: debian:buster-slim
+              imagePullPolicy: IfNotPresent
+              args:
+              - /bin/sh
+              - -c
+              - env; sleep 120
+              envFrom:
+              - secretRef:
+                  name: {{ include "backupkrane.fullname" . }}
+              volumeMounts:
+              - name: tests
+                mountPath: {{ .Values.test_file }}
+            - name: db
+              image: mariadb:10
+              imagePullPolicy: IfNotPresent
+              envFrom:
+              - secretRef:
+                  name: {{ include "backupkrane.fullname" . }}
+          volumes:
+            - name: tests
+              configMap:
+                name: {{ include "backupkrane.fullname" . }}
+          restartPolicy: Never

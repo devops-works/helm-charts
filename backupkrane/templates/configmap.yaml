@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "backupkrane.name" . }}
+    helm.sh/chart: {{ include "backupkrane.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    devops.works/customer: {{ .Values.customer }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ include "backupkrane.fullname" . }}
+data:
+  tests: {{ .Values.tests | toJson }}

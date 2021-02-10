@@ -1,0 +1,36 @@
+image:
+  repository: registry.gitlab.com/devopsworks/k8s/backup-krane
+  tag: 0.0.1
+  pullPolicy: IfNotPresent
+# imagePullSecrets:
+#   - name: regcred
+
+testFilePath: /etc/backupkrane/
+testFileName: test.yaml
+customer: devopsWorks
+activeDeadlineSeconds: 3600
+ttlSecondsAfterFinished: 86400
+engine:
+  method: mysqldump
+  name: mysql
+  version: "5.7"
+database: epartrade_prod
+bucketSource: 
+  url: gs://foo
+  credentials: anNvbiBrZXk=
+  # type: s3
+  # accessKey:
+  # privateKey:<
+bucketDestination: 
+  url: gs://bar
+  credentials: anNvbiBrZXk=
+  # type: s3
+  # accessKey:
+  # privateKey:
+pollFrequency: 10 * * * *
+gpgPrivateKey: a2V5IGdwZw==
+tests: |
+  - assert:
+    - '"$result" -eq 1'
+    name: Ensure foo is valid
+    test: SELECT COUNT(valid) FROM table WHERE foo="bar" AND valid=1;
