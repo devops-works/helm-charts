@@ -3,15 +3,30 @@ entries:
   cert-manager-issuer:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2021-02-02T09:51:52.167614708Z"
+    created: "2021-02-11T13:56:10.751555313Z"
     description: A Helm chart for creating cluster issuers
-    digest: c7a3c7ff805f379549597bdd3a77340df4d076eaa924d245c047f478a612457a
+    digest: 9d41442767719592cb76127bf9a3f243e711e3fadb794c8ddb2b2133a597097a
     name: cert-manager-issuer
     type: application
     urls:
     - https://devops-works.github.io/helm-charts/packages/cert-manager-issuer-0.1.0.tgz
     version: 0.1.0
   cyberchef:
+  - apiVersion: v1
+    appVersion: v9.24.7
+    created: "2021-02-11T13:56:10.752012331Z"
+    description: A Helm chart for cyberchef - the Cyber Swiss Army Knife web app for encryption, encoding, compression and data analysis.
+    digest: f02c6a4327ae5b60bf9990f4f26823a1fad885a1ce863e6954c34fb5977f9ace
+    home: https://github.com/gchq/CyberChef/
+    maintainers:
+    - email: support@devops.works
+      name: devopsworks
+    name: cyberchef
+    sources:
+    - https://github.com/gchq/CyberChef/
+    urls:
+    - https://devops-works.github.io/helm-charts/packages/cyberchef-1.1.0.tgz
+    version: 1.1.0
   - apiVersion: v1
     appVersion: v0.0.0
     created: "2021-02-02T09:51:52.168227109Z"
@@ -30,9 +45,9 @@ entries:
   devopsworks-website:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2021-02-02T09:51:52.16872571Z"
+    created: "2021-02-11T13:56:10.752436248Z"
     description: DevOps.Works website helm chart
-    digest: dac7fc4f8870164fd62b9f66699d0affd64c9c436531eb2f2a8fc16b4d6528ca
+    digest: b35799099a23f335ccbef5f30c1ddf6ea3de85489015c24504d9b5f4c0f1ebed
     name: devopsworks-website
     type: application
     urls:
@@ -41,9 +56,9 @@ entries:
   echoip:
   - apiVersion: v1
     appVersion: v0.0.0
-    created: "2021-02-02T09:51:52.16915031Z"
+    created: "2021-02-11T13:56:10.752878765Z"
     description: A Helm chart for echoip - a simple service for looking up your IP address
-    digest: 9e37f171fc9d08ac34d325cff9fbbbd79e70ddf5b5365dc21cc49186edf67a29
+    digest: fc846bc10a97fda0f6a1f1fa41aa846b9b9a20bd031bf1a1fae7499dea494b3a
     home: https://github.com/mpolden/echoip/
     maintainers:
     - email: support@devops.works
@@ -57,9 +72,9 @@ entries:
   scan-exporter-chart:
   - apiVersion: v2
     appVersion: v1.1.1
-    created: "2021-02-02T09:51:52.169626011Z"
+    created: "2021-02-11T13:56:10.753341483Z"
     description: A Helm chart to deploy scan-exporter in Kubernetes
-    digest: 6244ca36300e9a9d01199e81b0771c248faae020a038432a9524013d142cd37f
+    digest: 5bdcdc7680513761d735e673b693140883468b7fa97a032b0864b2b637889165
     home: https://github.com/devops-works/scan-exporter
     maintainers:
     - email: support@devops.works
@@ -91,4 +106,4 @@ entries:
     urls:
     - https://devops-works.github.io/helm-charts/packages/scan-exporter-chart-1.0.0.tgz
     version: 1.0.0
-generated: "2021-02-02T09:51:52.166643806Z"
+generated: "2021-02-11T13:56:10.750994491Z"
