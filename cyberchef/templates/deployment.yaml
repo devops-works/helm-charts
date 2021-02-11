@@ -26,7 +26,6 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          args: ["-r", "-H", "X-Forwarded-For"]
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

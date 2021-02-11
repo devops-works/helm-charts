@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: mpepping/cyberchef
-  tag: latest
+  tag: v9.24.7
   pullPolicy: IfNotPresent
 
 nameOverride: ""
