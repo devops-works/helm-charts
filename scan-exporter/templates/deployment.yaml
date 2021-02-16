@@ -18,6 +18,7 @@ spec:
                 - name: {{ include "scanexporter.fullname" . }}
                   image: {{ .Values.scanexporter.container.image }}
                   args: ["-config", "/etc/scan-exporter/config.yaml"]
+                  imagePullPolicy: {{ .Values.scanexporter.container.imagePullPolicy }}
                   volumeMounts:
                     - name: config
                       mountPath: "/etc/scan-exporter"
@@ -31,7 +32,7 @@ spec:
                       initialDelaySeconds: {{ .Values.scanexporter.liveness.initialDelay }}
                       periodSeconds: {{ .Values.scanexporter.liveness.period }}
                   ports:
-                      - name: metrics 
+                      - name: "metrics"
                         containerPort: {{ .Values.scanexporter.container.port }}
             volumes:
               - name: config
