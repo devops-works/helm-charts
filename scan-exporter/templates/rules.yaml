@@ -6,17 +6,19 @@ metadata:
   namespace: {{ .Values.alertRules.namespace }}
 spec:
   groups:
+    {{- if .Values.alertRules.rules }}
     - name: scanexporter.rules
-      {{- with .Values.alertRules }}
       rules:
+      {{- with .Values.alertRules }}
         {{- range .rules }}
         - alert: {{ .name }}
           expr: {{ .expr }}
           labels:
-            severity:  {{ .severity }}
+            severity:  {{ .severity | quote }}
           annotations:
-            summary: {{ .annotations.summary }}
-            description: {{ .annotations.description }}
+            summary: {{ .annotations.summary | quote }}
+            description: {{ .annotations.description | quote }}
         {{- end }}
       {{- end }}
+    {{- end }}
 {{- end }}
