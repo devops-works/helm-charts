@@ -24,6 +24,22 @@ podMonitor:
     enabled: false
     path: /metrics
 
+alertRules:
+    enabled: false
+    namespace: metro
+    icmpNotResponding:
+        name: ICMPNotResponding
+        threshold: 0
+        severity: high
+    tooManyOpenPorts:
+        name: TooManyOpenPorts
+        threshold: 0
+        severity: high
+    tooManyClosedPorts:
+        name: TooManyClosedPorts
+        threshold: 0
+        severity: critical
+
 targets: |-
          timeout: 2
          limit: 1024

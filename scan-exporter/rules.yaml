@@ -1,0 +1,32 @@
+{{- if .Values.alertRules.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "scanexporter.fullname" . }}
+  namespace: {{ .Values.alertRules.namespace }}
+spec:
+  groups:
+    - name: scanexporter.rules
+      rules:
+        - alert: {{ .Values.alertRules.icmpNotResponding.name }}
+          expr: scanexporter_icmp_not_responding_total > {{ .Values.alertRules.icmpNotResponding.threshold }}
+          labels:
+            severity:  {{ .Values.alertRules.icmpNotResponding.severity }}
+          annotations:
+            summary: "Target {{ $labels.name }} does not respond."
+            description: "{{ $labels.name }} of job {{ $labels.job }} didn't respond to the last ping."
+        - alert: {{ .Values.alertRules.tooManyOpenPorts.name }}
+          expr: scanexporter_unexpected_open_ports_total > {{ .Values.alertRules.tooManyOpenPorts.threshold }}
+          labels:
+            severity: {{ .Values.alertRules.tooManyOpenPorts.severity }}
+          annotations:
+            summary: "Target {{ $labels.name }} has too many open ports."
+            description: "{{ $labels.name }} of job {{ $labels.job }} has {{ $value }} ports that should not be open."
+        - alert: {{ .Values.alertRules.tooManyClosedPorts.name }}
+          expr: scanexporter_unexpected_closed_ports_total > {{ .Values.alertRules.tooManyClosedPorts.threshold }}
+          labels:
+            severity: {{ .Values.alertRules.tooManyClosedPorts.severity }}
+          annotations:
+            summary: "Target {{ $labels.name }} has too many closed ports."
+            description: "{{ $labels.name }} of job {{ $labels.job }} has {{ $value }} ports that should not be closed."
+{{- end }}
