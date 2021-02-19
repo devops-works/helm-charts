@@ -25,7 +25,7 @@ podMonitor:
     path: /metrics
 
 alertRules:
-    enabled: true
+    enabled: false
     namespace: metro
     rules:
       - name: ICMPNotResponding
