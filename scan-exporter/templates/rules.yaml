@@ -1,0 +1,22 @@
+{{- if .Values.alertRules.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "scanexporter.fullname" . }}
+  namespace: {{ .Values.alertRules.namespace }}
+spec:
+  groups:
+    - name: scanexporter.rules
+      {{- with .Values.alertRules }}
+      rules:
+        {{- range .rules }}
+        - alert: {{ .name }}
+          expr: {{ .expr }}
+          labels:
+            severity:  {{ .severity }}
+          annotations:
+            summary: {{ .annotations.summary }}
+            description: {{ .annotations.description }}
+        {{- end }}
+      {{- end }}
+{{- end }}
