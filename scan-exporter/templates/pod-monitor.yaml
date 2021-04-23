@@ -6,7 +6,7 @@ metadata:
 spec:
     namespaceSelector:
       matchNames:
-      - apps
+      - {{ .Release.Namespace }}
     podMetricsEndpoints:
       - interval: 10s
         scrapeTimeout: 10s
