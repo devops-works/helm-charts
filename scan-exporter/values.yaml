@@ -33,7 +33,7 @@ alertRules:
         severity: high
         annotations:
           summary: "Target {{ $labels.name }} does not respond."
-          description: "{{ $labels.name }} of job {{ $labels.job }} triggered {{ .name }}."
+          description: "{{ $labels.name }} of job {{ $labels.job }} was unreachable during the last ping."
       - name: TooManyOpenPorts
         expr: scanexporter_unexpected_open_ports_total > 0
         severity: high
