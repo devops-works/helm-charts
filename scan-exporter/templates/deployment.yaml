@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
     annotations:
-      {{ toYaml .Values.annotations }}
+      {{ toYaml .Values.deployment.annotations }}
     name: {{ include "scanexporter.fullname" . }}
     labels:
         app: {{ include "scanexporter.fullname" . }}
