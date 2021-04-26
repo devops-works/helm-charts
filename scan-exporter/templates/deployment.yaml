@@ -1,6 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+{{- if .Values.reloader.enabled -}}
+    annotations:
+        configmap.reloader.stakater.com/reload: scan-exporter-config
+{{- end }}
     name: {{ include "scanexporter.fullname" . }}
     labels:
         app: {{ include "scanexporter.fullname" . }}

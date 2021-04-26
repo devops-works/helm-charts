@@ -47,6 +47,9 @@ alertRules:
           summary: "Target {{ $labels.name }} has too many closed ports."
           description: "{{ $labels.name }} of job {{ $labels.job }} has {{ $value }} ports that should not be closed."
 
+reloader:
+  enabled: false
+
 targets: |-
          timeout: 2
          limit: 1024
