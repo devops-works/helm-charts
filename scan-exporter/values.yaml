@@ -6,7 +6,7 @@ scanexporter:
         period: 3
         path: /health
     container:
-        image: devopsworks/scan-exporter:2.0.1
+        image: devopsworks/scan-exporter:2.0.2
         imagePullPolicy: Always
         port: 2112
     resources:
@@ -23,6 +23,9 @@ fullnameOverride: ""
 podMonitor: 
     enabled: false
     path: /metrics
+
+annotations:
+    # configmap.reloader.stakater.com/reload: "scan-exporter-config"
 
 alertRules:
     enabled: false
@@ -46,9 +49,6 @@ alertRules:
         annotations:
           summary: "Target {{ $labels.name }} has too many closed ports."
           description: "{{ $labels.name }} of job {{ $labels.job }} has {{ $value }} ports that should not be closed."
-
-reloader:
-  enabled: false
 
 targets: |-
          timeout: 2
