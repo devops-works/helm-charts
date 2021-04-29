@@ -6,7 +6,7 @@ scanexporter:
         period: 3
         path: /health
     container:
-        image: devopsworks/scan-exporter:2.1.0
+        image: devopsworks/scan-exporter:2.2.0
         imagePullPolicy: Always
         port: 2112
     resources:
@@ -37,7 +37,7 @@ alertRules:
         severity: high
         annotations:
           summary: "Target {{ $labels.name }} does not respond."
-          description: "{{ $labels.name }} of job {{ $labels.job }} was unreachable during the last ping."
+          description: "a target from job {{ $labels.job }} was unreachable during the last ping. Please check the logs."
       - name: TooManyOpenPorts
         expr: scanexporter_unexpected_open_ports_total > 0
         severity: high
