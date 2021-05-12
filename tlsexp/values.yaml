@@ -1,0 +1,40 @@
+replicaCount: 1
+
+image:
+  repository: devopsworks/tlsexp
+  pullPolicy: Always
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 2112
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+args:
+  period_in_sec: 60
+  prometheus:
+    enabled: true
+    port: 2112
+  domains:
+    - https://devops.works

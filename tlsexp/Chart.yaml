@@ -1,0 +1,14 @@
+apiVersion: v2
+name: tlsexp-chart
+description: A Helm chart to deploy tlsexp in Kubernetes
+type: application
+version: 0.0.1
+appVersion: "v0.2"
+home: https://gitlab.com/devopsworks/tools/tlsexp
+sources:
+  - https://gitlab.com/devopsworks/tools/tlsexp
+maintainers:
+- name: devopsworks
+  email: support@devops.works
+- name: ezekiel
+  email: hugo@devops.works
