@@ -33,11 +33,11 @@ alertRules:
     namespace: metro
     rules:
       - name: ICMPNotResponding
-        expr: scanexporter_icmp_not_responding_total > 0
+        expr: scanexporter_rtt_total == 0
         severity: high
         annotations:
           summary: "Target {{ $labels.name }} does not respond."
-          description: "a target from job {{ $labels.job }} was unreachable during the last ping. Please check the logs."
+          description: "{{ $label.name }} ({{ $label.ip}}) of job {{ $labels.job }} was unreachable during the last ping."
       - name: TooManyOpenPorts
         expr: scanexporter_unexpected_open_ports_total > 0
         severity: high
