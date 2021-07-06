@@ -9,7 +9,7 @@ spec:
       - {{ .Release.Namespace }}
     podMetricsEndpoints:
       - interval: {{ .Values.podMonitor.interval }}
-        scrapeTimeout: {{ .Values.podMonitor.scapeTimeout }}
+        scrapeTimeout: {{ .Values.podMonitor.scrapeTimeout }}
         port: metrics
         path: {{ .Values.podMonitor.path }}
     selector:
