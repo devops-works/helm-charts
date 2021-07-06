@@ -1,0 +1,22 @@
+You just installed...
+
+             \_/
+            (* *)
+           __)#(__
+          ( )...( )(🆙)
+          || |_| ||//
+       >==() | | ()/
+           _(___)_
+          [-]   [-]
+
+  +=========================+  
+  | Uptime Robot Helm Chart |
+  +=========================+  
+
+Your current release is named `{{ .Release.Name }}`.
+
+To get more information about this release, try:
+
+    $ helm status {{ .Release.Name }}
+    $ helm get all {{ .Release.Name }}
+

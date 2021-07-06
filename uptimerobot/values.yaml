@@ -1,0 +1,35 @@
+replicaCount: 1
+
+image:
+  repository: billimek/prometheus-uptimerobot-exporter:0.0.1
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podMonitor:
+  enabled: true
+  path: /metrics
+
+uptimerobot:
+  apiKey: replace-me-plz
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

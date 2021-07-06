@@ -1,0 +1,18 @@
+{{- if .Values.podMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "uptimerobot.fullname" . }}
+spec:
+    namespaceSelector:
+      matchNames:
+      - {{ .Release.Namespace }}
+    podMetricsEndpoints:
+      - interval: 1m
+        scrapeTimeout: 1m
+        port: metrics
+        path: {{ .Values.podMonitor.path }}
+    selector:
+      matchLabels:
+          app: {{ include "uptimerobot.fullname" . }}
+{{- end }}
