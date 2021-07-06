@@ -11,6 +11,8 @@ fullnameOverride: ""
 podMonitor:
   enabled: true
   path: /metrics
+  interval: 1m
+  scrapeTimeout: 1m
 
 uptimerobot:
   apiKey: replace-me-plz

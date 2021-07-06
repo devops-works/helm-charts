@@ -8,8 +8,8 @@ spec:
       matchNames:
       - {{ .Release.Namespace }}
     podMetricsEndpoints:
-      - interval: 1m
-        scrapeTimeout: 1m
+      - interval: {{ .Values.podMonitor.interval }}
+        scrapeTimeout: {{ .Values.podMonitor.scapeTimeout }}
         port: metrics
         path: {{ .Values.podMonitor.path }}
     selector:
