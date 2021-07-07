@@ -32,7 +32,14 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-resources: {}
+resources:
+  resources:
+      requests:
+          memory: "25Mi"
+          cpu: "100m"
+      limits:
+          memory: "75Mi"
+          cpu: "150m"
 
 nodeSelector: {}
 tolerations: []
