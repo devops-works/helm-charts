@@ -35,7 +35,7 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: {{ .Values.podMonitor.path }}
+              path: {{ .Values.healthPath }}
               port: metrics
           readinessProbe:
             httpGet:
