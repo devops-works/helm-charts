@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: billimek/prometheus-uptimerobot-exporter:0.0.1
+  repository: ez3kiel/uptimerobot-exporter:latest
   pullPolicy: Always
 
 imagePullSecrets: []
