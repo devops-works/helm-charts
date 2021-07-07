@@ -3,9 +3,9 @@ entries:
   cert-manager-issuer:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2021-07-07T15:00:21.591509164Z"
+    created: "2021-07-07T19:35:35.79318787Z"
     description: A Helm chart for creating cluster issuers
-    digest: 2035dce1d7e53eac2a693b12f3779e884b378ac25484108ea5aad1acdda3f93c
+    digest: e2439e9d4ad1d5d960eac86c7ce7ad8d3218f8267b74bf820983daa1cec35e75
     name: cert-manager-issuer
     type: application
     urls:
@@ -14,10 +14,10 @@ entries:
   cyberchef:
   - apiVersion: v1
     appVersion: v9.24.7
-    created: "2021-07-07T15:00:21.592230713Z"
+    created: "2021-07-07T19:35:35.793625876Z"
     description: A Helm chart for cyberchef - the Cyber Swiss Army Knife web app for
       encryption, encoding, compression and data analysis.
-    digest: 51cc7cc0db9a314af071bc34897ab9c62268b361cedeb40f717ad2662fe4afe4
+    digest: c656999bba2d3479a35cc0efc931191e36af9a658338fa823d76888421872160
     home: https://github.com/gchq/CyberChef/
     maintainers:
     - email: support@devops.works
@@ -47,9 +47,9 @@ entries:
   devopsworks-website:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2021-07-07T15:00:21.593013667Z"
+    created: "2021-07-07T19:35:35.794077183Z"
     description: DevOps.Works website helm chart
-    digest: 867f27811dbb4744ea49a5de66feba8b2e42786de3803ad349d7d043d1240f3e
+    digest: d708d88af92f46516fb1bd1405a1123726c60fded639432e0400ceb96a242601
     name: devopsworks-website
     type: application
     urls:
@@ -58,10 +58,10 @@ entries:
   echoip:
   - apiVersion: v1
     appVersion: v0.0.0
-    created: "2021-07-07T15:00:21.593731416Z"
+    created: "2021-07-07T19:35:35.794456988Z"
     description: A Helm chart for echoip - a simple service for looking up your IP
       address
-    digest: dde469bc1aa37d10ffa77719bb241b94049744248f66a8496aed78beb966e581
+    digest: 280f254492d442f88f8100392437856aae409e8149877712c7d4cd3c7b436e15
     home: https://github.com/mpolden/echoip/
     maintainers:
     - email: support@devops.works
@@ -75,9 +75,9 @@ entries:
   scan-exporter-chart:
   - apiVersion: v2
     appVersion: v2.2.0
-    created: "2021-07-07T15:00:21.594789188Z"
+    created: "2021-07-07T19:35:35.801098684Z"
     description: A Helm chart to deploy scan-exporter in Kubernetes
-    digest: b38e02809414d33c6ad021ce753b5b6d3ee4e76fe726283269974459a9421d16
+    digest: eebf4eb53e0ce96eb71c86649782839027cf51dcc3f1cf6ad5005ce0d79406e2
     home: https://github.com/devops-works/scan-exporter
     maintainers:
     - email: support@devops.works
@@ -327,13 +327,13 @@ entries:
     version: 1.0.0
   uptimerobot:
   - apiVersion: v2
-    appVersion: 0.0.1
-    created: "2021-07-07T15:00:21.595764155Z"
+    appVersion: 0.2.0
+    created: "2021-07-07T19:35:35.8021942Z"
     description: A Helm chart to deploy Uptime Robot exporter for Kubernetes
-    digest: e8fb5973fae91216de5fd85ddc04f29dd3555ea0114a8c351485e7443f2f273a
+    digest: c163fd70309e56135497ebd4562dda3463737e142b70efc320dcfd353bafecad
     name: uptimerobot
     type: application
     urls:
     - https://devops-works.github.io/helm-charts/packages/uptimerobot-0.0.1.tgz
     version: 0.0.1
-generated: "2021-07-07T15:00:21.582522149Z"
+generated: "2021-07-07T19:35:35.785206554Z"
