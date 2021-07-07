@@ -8,6 +8,8 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+healthPath: /health
+
 podMonitor:
   enabled: true
   path: /metrics
