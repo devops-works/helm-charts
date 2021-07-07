@@ -1,7 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: ez3kiel/uptimerobot-exporter:latest
+  repository: ez3kiel/uptimerobot-exporter
+  tag: ""
   pullPolicy: Always
 
 imagePullSecrets: []
