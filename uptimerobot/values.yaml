@@ -33,13 +33,12 @@ securityContext: {}
   # runAsUser: 1000
 
 resources:
-  resources:
-      requests:
-          memory: "25Mi"
-          cpu: "100m"
-      limits:
-          memory: "75Mi"
-          cpu: "150m"
+  requests:
+      memory: "25Mi"
+      cpu: "100m"
+  limits:
+      memory: "75Mi"
+      cpu: "150m"
 
 nodeSelector: {}
 tolerations: []
