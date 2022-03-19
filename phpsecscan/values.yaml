@@ -1,9 +1,8 @@
 name: phpsecscan
 replicaCount: 1
 liveness:
-  initialDelay: 20
   period: 3
-  path: /health
+  path: /status
 container:
   image: devopsworks/phpsecscan:v0.0.9
   imagePullPolicy: Always
