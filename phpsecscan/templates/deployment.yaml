@@ -30,6 +30,6 @@ spec:
                       initialDelaySeconds: {{ .Values.liveness.initialDelay }}
                       periodSeconds: {{ .Values.liveness.period }}
                   ports:
-                      - name: "metrics"
+                      - name: "http"
                         containerPort: {{ .Values.container.port }}
 
