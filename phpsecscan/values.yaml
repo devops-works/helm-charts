@@ -1,0 +1,48 @@
+name: phpsecscan
+replicaCount: 1
+liveness:
+  initialDelay: 20
+  period: 3
+  path: /health
+container:
+  image: devopsworks/phpsecscan:v0.0.9
+  imagePullPolicy: Always
+  port: 8000
+resources:
+  requests:
+    memory: "100Mi"
+    cpu: "200m"
+  limits:
+    memory: "150Mi"
+    cpu: "375m"
+
+nameOverride: ""
+fullnameOverride: ""
+
+podMonitor: 
+    enabled: false
+    path: /metrics
+
+service:
+  type: ClusterIP
+  port: 8080
+  annotations: {}
+  labels: {}
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+  path: /
+  hosts:
+    - chart-example.local
+  tls: []
+
+deployment:
+    annotations:
+        # configmap.reloader.stakater.com/reload: "phpsecscan-config"
+
+alertRules:
+    enabled: false
+    namespace: metro
+    rules: []
