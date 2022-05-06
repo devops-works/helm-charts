@@ -5,8 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ include "phpsecscan.name" . }}
     helm.sh/chart: {{ include "phpsecscan.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "phpsecscan.labels" . | nindent 4 }}
 {{- if .Values.service.labels }}
 {{ toYaml .Values.service.labels | indent 4 }}
 {{- end }}

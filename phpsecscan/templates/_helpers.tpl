@@ -31,3 +31,15 @@ Create chart name and version as used by the chart label.
 {{- define "phpsecscan.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "phpsecscan.labels" -}}
+helm.sh/chart: {{ include "phpsecscan.chart" . }}
+{{ include "phpsecscan.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
