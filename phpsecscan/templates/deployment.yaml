@@ -6,11 +6,13 @@ metadata:
     name: {{ include "phpsecscan.fullname" . }}
     labels:
         app: {{ include "phpsecscan.fullname" . }}
+        {{- include "phpsecscan.labels" . | nindent 8 }}
 spec:
     replicas: {{ .Values.replicaCount }}
     selector:
         matchLabels:
             app: {{ include "phpsecscan.fullname" . }}
+            {{- include "phpsecscan.labels" . | nindent 12 }}
     template:
         metadata:
             labels:
