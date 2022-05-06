@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    annotations:
+      {{ toYaml .Values.deployment.annotations }}
+    name: {{ include "phpsecscan.fullname" . }}
+    labels:
+        app: {{ include "phpsecscan.fullname" . }}
+spec:
+    replicas: {{ .Values.replicaCount }}
+    selector:
+        matchLabels:
+            app: {{ include "phpsecscan.fullname" . }}
+    template:
+        metadata:
+            labels:
+                app: {{ include "phpsecscan.fullname" . }}
+        spec:
+            containers:
+                - name: {{ include "phpsecscan.fullname" . }}
+                  image: {{ .Values.container.image }}
+                  args: ["-port", "{{ .Values.container.port }}"]
+                  imagePullPolicy: {{ .Values.container.imagePullPolicy }}
+                  resources:
+{{ toYaml .Values.resources | indent 20 }}
+                  livenessProbe:
+                      httpGet:
+                          path: {{ .Values.liveness.path }}
+                          port: {{ .Values.container.port }}
+                      initialDelaySeconds: {{ .Values.liveness.initialDelay }}
+                      periodSeconds: {{ .Values.liveness.period }}
+                  ports:
+                      - name: "http"
+                        containerPort: {{ .Values.container.port }}
+
