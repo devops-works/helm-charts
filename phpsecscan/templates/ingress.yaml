@@ -6,9 +6,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    app.kubernetes.io/name: {{ include "phpsecscan.name" . }}
     helm.sh/chart: {{ include "phpsecscan.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
     {{- include "phpsecscan.labels" . | nindent 4 }}
 {{- with .Values.ingress.annotations }}
   annotations:
@@ -32,7 +30,8 @@ spec:
         paths:
           - path: {{ $ingressPath }}
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: http
+              service:
+                name: {{ $fullName }}
+                port: http
   {{- end }}
 {{- end }}
