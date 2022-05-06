@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: {{ include "phpsecscan.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "phpsecscan.name" . }}
     helm.sh/chart: {{ include "phpsecscan.chart" . }}
     {{- include "phpsecscan.labels" . | nindent 4 }}
 {{- if .Values.service.labels }}
