@@ -5,14 +5,12 @@ metadata:
       {{ toYaml .Values.deployment.annotations }}
     name: {{ include "phpsecscan.fullname" . }}
     labels:
-        app: {{ include "phpsecscan.fullname" . }}
         {{- include "phpsecscan.labels" . | nindent 8 }}
 spec:
     replicas: {{ .Values.replicaCount }}
     selector:
         matchLabels:
-            app: {{ include "phpsecscan.fullname" . }}
-            {{- include "phpsecscan.labels" . | nindent 12 }}
+          {{- include "phpsecscan.labels" . | nindent 10 }}
     template:
         metadata:
             labels:
