@@ -1,35 +1,38 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    annotations:
-      {{ toYaml .Values.deployment.annotations }}
-    name: {{ include "phpsecscan.fullname" . }}
-    labels:
-        {{- include "phpsecscan.labels" . | nindent 8 }}
+  name: {{ include "phpsecscan.fullname" . }}
+  labels:
+    {{- include "phpsecscan.labels" . | nindent 8 }}
+{{- with .Values.deployment.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
-    replicas: {{ .Values.replicaCount }}
-    selector:
-        matchLabels:
-          {{- include "phpsecscan.labels" . | nindent 10 }}
-    template:
-        metadata:
-            labels:
-                app: {{ include "phpsecscan.fullname" . }}
-        spec:
-            containers:
-                - name: {{ include "phpsecscan.fullname" . }}
-                  image: {{ .Values.container.image }}
-                  args: ["-port", "{{ .Values.container.port }}"]
-                  imagePullPolicy: {{ .Values.container.imagePullPolicy }}
-                  resources:
-{{ toYaml .Values.resources | indent 20 }}
-                  livenessProbe:
-                      httpGet:
-                          path: {{ .Values.liveness.path }}
-                          port: {{ .Values.container.port }}
-                      initialDelaySeconds: {{ .Values.liveness.initialDelay }}
-                      periodSeconds: {{ .Values.liveness.period }}
-                  ports:
-                      - name: "http"
-                        containerPort: {{ .Values.container.port }}
-
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "phpsecscan.labels" . | nindent 10 }}
+  template:
+    metadata:
+      labels:
+        {{- include "phpsecscan.labels" . | nindent 10 }}
+    spec:
+      containers:
+        - name: {{ include "phpsecscan.fullname" . }}
+          image: {{ .Values.container.image }}
+          args: ["-port", "{{ .Values.container.port }}", "-logformat", "json"]
+          imagePullPolicy: {{ .Values.container.imagePullPolicy }}
+          ports:
+            - name: "http"
+              containerPort: {{ .Values.container.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.liveness.path }}
+              port: {{ .Values.container.port }}
+            initialDelaySeconds: {{ .Values.liveness.initialDelay }}
+            periodSeconds: {{ .Values.liveness.period }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
