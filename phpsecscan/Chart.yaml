@@ -2,8 +2,8 @@ apiVersion: v2
 name: phpsecscan
 description: A Helm chart to deploy phpsecscan in Kubernetes
 type: application
-version: 0.0.9
-appVersion: "0.0.9"
+version: 0.0.14
+appVersion: "0.0.14"
 home: https://github.com/devops-works/phpsecscan
 sources:
   - https://github.com/devops-works/phpsecscan
