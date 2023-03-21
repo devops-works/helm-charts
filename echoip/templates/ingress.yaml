@@ -34,8 +34,9 @@ spec:
           - path: {{ $ingressPath }}
             pathType: ImplementationSpecific
             backend:
-              name: {{ $fullName }}
-              port:
-                number: {{ $svcPort }}
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
   {{- end }}
 {{- end }}
