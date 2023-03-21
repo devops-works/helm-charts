@@ -1,6 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "echoip.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
+{{- $svcPort := .Values.service.port | default 8080 -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -35,6 +36,6 @@ spec:
             backend:
               name: {{ $fullName }}
               port:
-                name: http
+                number: {{ $svcPort }}
   {{- end }}
 {{- end }}
