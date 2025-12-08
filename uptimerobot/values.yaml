@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/eze-kiel/uptimerobot-exporter
+  repository: ghcr.io/devops-works/uptimerobot-exporter
   tag: ""
   pullPolicy: Always
 
