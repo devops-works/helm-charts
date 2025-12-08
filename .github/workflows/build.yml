@@ -22,7 +22,7 @@ jobs:
               exit 1
             fi
           done
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v5
         with:
           name: dworks-packages
           path: ${{ runner.temp }}/packages/
