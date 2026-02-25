@@ -3,9 +3,9 @@ entries:
   cert-manager-issuer:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2026-02-25T15:27:59.812333987Z"
+    created: "2026-02-25T15:42:50.935135236Z"
     description: A Helm chart for creating cluster issuers
-    digest: 89831ea4892af62c427b0556c2a3b758c2644b3cae26fd798c61953314b76dbd
+    digest: 2e2d9507bc3d3522fa2de483cd49dd93da5f4efc00c8da5159a76c45c02ce472
     name: cert-manager-issuer
     type: application
     urls:
@@ -14,10 +14,10 @@ entries:
   cyberchef:
   - apiVersion: v1
     appVersion: v9.24.7
-    created: "2026-02-25T15:27:59.812662661Z"
+    created: "2026-02-25T15:42:50.935560219Z"
     description: A Helm chart for cyberchef - the Cyber Swiss Army Knife web app for
       encryption, encoding, compression and data analysis.
-    digest: 125b1f244c85165667f2a0c13cf2f3735f2d16624f1ad99e7e3a46cecc87f15f
+    digest: 90b1fcb211e8343bdf528a54492dfa162b953fc73c25960d7774d5e0551e5e84
     home: https://github.com/gchq/CyberChef/
     maintainers:
     - email: support@devops.works
@@ -79,9 +79,9 @@ entries:
   devopsworks-website:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-02-25T15:27:59.812969154Z"
+    created: "2026-02-25T15:42:50.935856341Z"
     description: DevOps.Works website helm chart
-    digest: 36458594b4509791966f4952f1706bbe18d784e9f428b96d661d06a18591dbc1
+    digest: b5d03b0dba40237a8d0a06703dc0eda4c7e650f735ae80c999d7d3b21b91ab6f
     name: devopsworks-website
     type: application
     urls:
@@ -110,10 +110,10 @@ entries:
   echoip:
   - apiVersion: v1
     appVersion: v0.0.0
-    created: "2026-02-25T15:27:59.813241975Z"
+    created: "2026-02-25T15:42:50.936132406Z"
     description: A Helm chart for echoip - a simple service for looking up your IP
       address
-    digest: b2d27d798c67b8f9f2c0f9057c23e7dbe5dea4fcd198d4de13b9e129d4b0a17f
+    digest: 64248f5fdb68682b92fcbdce13a2aa5a56cbbb8be7e780a613dce5d80823f59d
     home: https://github.com/mpolden/echoip/
     maintainers:
     - email: support@devops.works
@@ -191,9 +191,9 @@ entries:
   phpsecscan:
   - apiVersion: v2
     appVersion: 0.0.9
-    created: "2026-02-25T15:27:59.813586468Z"
+    created: "2026-02-25T15:42:50.936470186Z"
     description: A Helm chart to deploy phpsecscan in Kubernetes
-    digest: 5f2c941589345e3b66d8a7b4b9c7f830029188d05ffc1217d2c692be61c37ee0
+    digest: 0ff5c74ca8031734ec8fdc670d1e802028b9d81f59ae7107804eb50f4e6bcc24
     home: https://github.com/devops-works/phpsecscan
     maintainers:
     - email: support@devops.works
@@ -241,9 +241,9 @@ entries:
   scan-exporter:
   - apiVersion: v2
     appVersion: v2.3.0
-    created: "2026-02-25T15:27:59.813964125Z"
+    created: "2026-02-25T15:42:50.936839415Z"
     description: A Helm chart to deploy scan-exporter in Kubernetes
-    digest: ca1cd909a0115e0237d04b5bbc95edf6190158373cfd48b13011abe3cd610985
+    digest: d84133d249d71ba5ae2564aa77c9b0d85e3a953bb8ce0b041783af211c554cb2
     home: https://github.com/devops-works/scan-exporter
     maintainers:
     - email: support@devops.works
@@ -531,9 +531,9 @@ entries:
   thanos:
   - apiVersion: v2
     appVersion: 0.41.0
-    created: "2026-02-25T15:27:59.814810797Z"
+    created: "2026-02-25T15:42:50.937709387Z"
     description: Thanos Helm chart for long-term Prometheus metrics storage
-    digest: 5a35594ea70e20eb576e193fb43f8018f6dd707fde6ef45347595624fb0b4ae4
+    digest: fa44f73919a8c1c8e4cd95cdebd1f31da90745aab25fb115c2b91f48b353ea36
     name: thanos
     type: application
     urls:
@@ -542,9 +542,9 @@ entries:
   uptimerobot:
   - apiVersion: v2
     appVersion: 0.4.4
-    created: "2026-02-25T15:27:59.815021932Z"
+    created: "2026-02-25T15:42:50.937944055Z"
     description: A Helm chart to deploy Uptime Robot exporter for Kubernetes
-    digest: d085b65d6b064097842db4a0258ffbe332f2acb0c1c0a587d9c26166f712b585
+    digest: a27062562cb8e658a6638cbc636cb9d2f7cee1539d22ec9d572b77913ff94fb8
     name: uptimerobot
     type: application
     urls:
@@ -590,4 +590,4 @@ entries:
     urls:
     - https://devops-works.github.io/helm-charts/packages/uptimerobot-0.0.1.tgz
     version: 0.0.1
-generated: "2026-02-25T15:27:59.804062213Z"
+generated: "2026-02-25T15:42:50.918236191Z"
