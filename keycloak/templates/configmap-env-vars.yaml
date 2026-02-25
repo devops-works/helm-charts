@@ -1,0 +1,60 @@
+{{- /*
+Keycloak Environment Variables ConfigMap (Official Keycloak image)
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-env-vars" (include "keycloak.fullname" .) }}
+  namespace: {{ include "keycloak.namespace" . | quote }}
+  labels: {{- include "keycloak.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+  {{- with .Values.commonAnnotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  ## Admin bootstrap
+  KC_BOOTSTRAP_ADMIN_USERNAME: {{ .Values.auth.adminUser | quote }}
+  
+  ## HTTP settings
+  KC_HTTP_ENABLED: "true"
+  KC_HTTP_PORT: {{ .Values.containerPorts.http | quote }}
+  KC_HTTPS_ENABLED: "false"
+  KC_HTTP_RELATIVE_PATH: {{ .Values.httpRelativePath | quote }}
+  
+  ## Proxy settings
+  KC_PROXY_HEADERS: {{ .Values.proxyHeaders | quote }}
+  
+  ## Hostname settings
+  {{- if and .Values.ingress.enabled .Values.ingress.hostname }}
+  KC_HOSTNAME: {{ tpl .Values.ingress.hostname . | quote }}
+  {{- end }}
+  KC_HOSTNAME_STRICT: {{ ternary "true" "false" .Values.hostnameStrict | quote }}
+  
+  ## Database settings (PostgreSQL)
+  KC_DB: "postgres"
+  KC_DB_URL_HOST: {{ include "keycloak.databaseHost" . | quote }}
+  KC_DB_URL_PORT: {{ include "keycloak.databasePort" . }}
+  KC_DB_URL_DATABASE: {{ include "keycloak.databaseName" . | quote }}
+  KC_DB_USERNAME: {{ include "keycloak.databaseUser" . | quote }}
+  
+  ## Metrics and health
+  KC_METRICS_ENABLED: {{ ternary "true" "false" .Values.metrics.enabled | quote }}
+  KC_HEALTH_ENABLED: "true"
+  
+  ## Cache settings
+  {{- if .Values.cache.enabled }}
+  KC_CACHE: "ispn"
+  KC_CACHE_STACK: {{ .Values.cache.stackName | default "kubernetes" | quote }}
+  {{- if .Values.cache.stackFile }}
+  KC_CACHE_CONFIG_FILE: {{ .Values.cache.stackFile | quote }}
+  {{- end }}
+  JAVA_OPTS_APPEND: {{ printf "-Djgroups.dns.query=%s-headless.%s.svc.%s" (include "keycloak.fullname" .) (include "keycloak.namespace" .) .Values.clusterDomain | quote }}
+  {{- else }}
+  KC_CACHE: "local"
+  {{- end }}
+  
+  ## Logging
+  {{- if .Values.logging }}
+  KC_LOG_CONSOLE_OUTPUT: {{ .Values.logging.output | quote }}
+  KC_LOG_LEVEL: {{ .Values.logging.level | quote }}
+  {{- end }}

@@ -1,0 +1,7 @@
+{{- /*
+Extra manifests to deploy
+*/}}
+{{- range .Values.extraDeploy }}
+---
+{{ toYaml . }}
+{{- end }}

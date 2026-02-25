@@ -1,0 +1,57 @@
+{{- /*
+Keycloak ServiceMonitor for Prometheus Operator
+*/}}
+{{- if and .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "keycloak.fullname" . }}
+  namespace: {{ default (include "keycloak.namespace" .) .Values.metrics.serviceMonitor.namespace }}
+  labels: {{- include "keycloak.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+    {{- with .Values.metrics.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.commonAnnotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.metrics.serviceMonitor.jobLabel }}
+  jobLabel: {{ . }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "keycloak.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: keycloak
+    {{- with .Values.metrics.serviceMonitor.selector }}
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ include "keycloak.namespace" . | quote }}
+  endpoints:
+    {{- range .Values.metrics.serviceMonitor.endpoints }}
+    - port: {{ default $.Values.metrics.serviceMonitor.port .port }}
+      path: {{ tpl .path $ }}
+      {{- with (default $.Values.metrics.serviceMonitor.scheme .scheme) }}
+      scheme: {{ . }}
+      {{- end }}
+      {{- with (default $.Values.metrics.serviceMonitor.interval .interval) }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with (default $.Values.metrics.serviceMonitor.scrapeTimeout .scrapeTimeout) }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+      {{- with (default $.Values.metrics.serviceMonitor.tlsConfig .tlsConfig) }}
+      tlsConfig: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .relabelings }}
+      relabelings: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .metricRelabelings }}
+      metricRelabelings: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.metrics.serviceMonitor.honorLabels }}
+      honorLabels: {{ . }}
+      {{- end }}
+    {{- end }}
+{{- end }}

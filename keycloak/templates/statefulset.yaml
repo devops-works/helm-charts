@@ -1,0 +1,218 @@
+{{- /*
+Keycloak StatefulSet (Official Keycloak image)
+*/}}
+{{- include "keycloak.validateValues" . }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "keycloak.fullname" . }}
+  namespace: {{ include "keycloak.namespace" . | quote }}
+  labels: {{- include "keycloak.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+  {{- with .Values.statefulsetAnnotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimitCount }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  serviceName: {{ printf "%s-headless" (include "keycloak.fullname" .) | trunc 63 | trimSuffix "-" }}
+  updateStrategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- if .Values.minReadySeconds }}
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "keycloak.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: keycloak
+  template:
+    metadata:
+      annotations:
+        checksum/configmap-env-vars: {{ include (print $.Template.BasePath "/configmap-env-vars.yaml") . | sha256sum }}
+        {{- if not .Values.auth.existingSecret }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels: {{- include "keycloak.labels" . | nindent 8 }}
+        app.kubernetes.io/component: keycloak
+    spec:
+      serviceAccountName: {{ include "keycloak.serviceAccountName" . }}
+      {{- include "keycloak.imagePullSecrets" . | nindent 6 }}
+      {{- with .Values.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.schedulerName }}
+      schedulerName: {{ .Values.schedulerName }}
+      {{- end }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      {{- if or .Values.enableDefaultInitContainers .Values.initContainers }}
+      initContainers:
+        {{- if .Values.enableDefaultInitContainers }}
+        - name: prepare-write-dirs
+          image: {{ include "keycloak.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              echo "Copying writable dirs to empty dir"
+              cp -r --preserve=mode /opt/keycloak/lib/quarkus /emptydir/app-quarkus-dir
+              cp -r --preserve=mode /opt/keycloak/data /emptydir/app-data-dir
+              cp -r --preserve=mode /opt/keycloak/providers /emptydir/app-providers-dir
+              echo "Copy operation completed"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /emptydir
+        {{- end }}
+        {{- with .Values.initContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: keycloak
+          image: {{ include "keycloak.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          command:
+            - /opt/keycloak/bin/kc.sh
+          args:
+            - start
+            {{- if or .Values.initdbScriptsConfigMap .Values.initdbScripts }}
+            - --config-file=/opt/keycloak/conf/keycloak.conf
+            {{- end }}
+          env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "keycloak.secretName" . }}
+                  key: {{ include "keycloak.secretKey" . }}
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "keycloak.databaseSecretName" . }}
+                  key: {{ include "keycloak.databaseSecretPasswordKey" . }}
+            {{- with .Values.extraEnvVars }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ printf "%s-env-vars" (include "keycloak.fullname" .) }}
+            {{- if .Values.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ .Values.extraEnvVarsCM }}
+            {{- end }}
+            {{- if .Values.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ .Values.extraEnvVarsSecret }}
+            {{- end }}
+          {{- with .Values.resources }}
+          resources: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.containerPorts.http }}
+              protocol: TCP
+            {{- if and .Values.metrics.enabled (ne (.Values.containerPorts.http | int) (.Values.containerPorts.metrics | int)) }}
+            - name: metrics
+              containerPort: {{ .Values.containerPorts.metrics }}
+              protocol: TCP
+            {{- end }}
+            - name: discovery
+              containerPort: 7800
+            {{- with .Values.extraContainerPorts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.customStartupProbe }}
+          startupProbe: {{- toYaml .Values.customStartupProbe | nindent 12 }}
+          {{- else if .Values.startupProbe.enabled }}
+          startupProbe: {{- omit .Values.startupProbe "enabled" | toYaml | nindent 12 }}
+            httpGet:
+              path: /health/started
+              port: http
+          {{- end }}
+          {{- if .Values.customLivenessProbe }}
+          livenessProbe: {{- toYaml .Values.customLivenessProbe | nindent 12 }}
+          {{- else if .Values.livenessProbe.enabled }}
+          livenessProbe: {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
+            httpGet:
+              path: /health/live
+              port: http
+          {{- end }}
+          {{- if .Values.customReadinessProbe }}
+          readinessProbe: {{- toYaml .Values.customReadinessProbe | nindent 12 }}
+          {{- else if .Values.readinessProbe.enabled }}
+          readinessProbe: {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
+            httpGet:
+              path: /health/ready
+              port: http
+          {{- end }}
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /opt/keycloak/conf
+              subPath: app-conf-dir
+            - name: empty-dir
+              mountPath: /opt/keycloak/lib/quarkus
+              subPath: app-quarkus-dir
+            - name: empty-dir
+              mountPath: /opt/keycloak/data
+              subPath: app-data-dir
+            - name: empty-dir
+              mountPath: /opt/keycloak/providers
+              subPath: app-providers-dir
+            {{- if or .Values.initdbScriptsConfigMap .Values.initdbScripts }}
+            - name: custom-init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- with .Values.sidecars }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        {{- if or .Values.initdbScriptsConfigMap .Values.initdbScripts }}
+        - name: custom-init-scripts
+          configMap:
+            name: {{ include "keycloak.initdbScriptsCM" . }}
+            defaultMode: 0755
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}

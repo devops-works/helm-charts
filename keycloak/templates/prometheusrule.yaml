@@ -1,0 +1,20 @@
+{{- /*
+Keycloak PrometheusRule for alerting
+*/}}
+{{- if and .Values.metrics.enabled .Values.metrics.prometheusRule.enabled .Values.metrics.prometheusRule.groups }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "keycloak.fullname" . }}
+  namespace: {{ default (include "keycloak.namespace" .) .Values.metrics.prometheusRule.namespace }}
+  labels: {{- include "keycloak.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+    {{- with .Values.metrics.prometheusRule.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.commonAnnotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  groups: {{- toYaml .Values.metrics.prometheusRule.groups | nindent 4 }}
+{{- end }}

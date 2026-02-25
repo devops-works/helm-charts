@@ -1,0 +1,80 @@
+{{- /*
+Keycloak NetworkPolicy
+*/}}
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "keycloak.fullname" . }}
+  namespace: {{ include "keycloak.namespace" . | quote }}
+  labels: {{- include "keycloak.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+  {{- with .Values.commonAnnotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    matchLabels: {{- include "keycloak.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: keycloak
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- if .Values.networkPolicy.allowExternalEgress }}
+  egress:
+    - {}
+  {{- else }}
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+        {{- range $port := .Values.networkPolicy.kubeAPIServerPorts }}
+        - port: {{ $port }}
+        {{- end }}
+    - ports:
+        - port: {{ include "keycloak.databasePort" . | trimAll "\"" | int }}
+    - ports:
+        - port: 7800
+        - port: {{ .Values.containerPorts.http }}
+      to:
+        - podSelector:
+            matchLabels: {{- include "keycloak.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: keycloak
+    {{- with .Values.networkPolicy.extraEgress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  ingress:
+    - ports:
+        - port: 7800
+        {{- if and .Values.metrics.enabled (ne (.Values.containerPorts.http | int) (.Values.containerPorts.metrics | int)) }}
+        - port: {{ .Values.containerPorts.metrics }}
+        {{- end }}
+        - port: {{ .Values.containerPorts.http }}
+      {{- if not .Values.networkPolicy.allowExternal }}
+      from:
+        - podSelector:
+            matchLabels: {{- include "keycloak.selectorLabels" . | nindent 14 }}
+        - podSelector:
+            matchLabels:
+              {{ include "keycloak.fullname" . }}-client: "true"
+        {{- if .Values.networkPolicy.ingressNSMatchLabels }}
+        - namespaceSelector:
+            matchLabels:
+              {{- range $key, $value := .Values.networkPolicy.ingressNSMatchLabels }}
+              {{ $key | quote }}: {{ $value | quote }}
+              {{- end }}
+          {{- if .Values.networkPolicy.ingressNSPodMatchLabels }}
+          podSelector:
+            matchLabels:
+              {{- range $key, $value := .Values.networkPolicy.ingressNSPodMatchLabels }}
+              {{ $key | quote }}: {{ $value | quote }}
+              {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- with .Values.networkPolicy.extraIngress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

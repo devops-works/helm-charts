@@ -1,0 +1,47 @@
+{{- /*
+Keycloak Service
+*/}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "keycloak.fullname" . }}
+  namespace: {{ include "keycloak.namespace" . | quote }}
+  labels: {{- include "keycloak.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+  {{- if or .Values.service.annotations .Values.commonAnnotations }}
+  annotations:
+    {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if and .Values.service.clusterIP (eq .Values.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.service.clusterIP }}
+  {{- end }}
+  {{- if .Values.service.sessionAffinity }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- end }}
+  {{- with .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  ports:
+    {{- if .Values.service.http.enabled }}
+    - name: http
+      port: {{ .Values.service.ports.http }}
+      protocol: TCP
+      targetPort: http
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) .Values.service.nodePorts.http }}
+      nodePort: {{ .Values.service.nodePorts.http }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- with .Values.service.extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  selector: {{- include "keycloak.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak

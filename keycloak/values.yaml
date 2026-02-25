@@ -1,0 +1,261 @@
+## Common parameters
+nameOverride: ""
+fullnameOverride: ""
+namespaceOverride: ""
+commonLabels: {}
+commonAnnotations: {}
+clusterDomain: cluster.local
+
+## Keycloak image
+image:
+  registry: docker.io
+  repository: keycloak/keycloak
+  tag: "26.1.4"
+  digest: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+  debug: false
+
+## Keycloak authentication
+auth:
+  adminUser: user
+  adminPassword: ""
+  existingSecret: ""
+  passwordSecretKey: ""
+
+## Proxy and hostname settings (production mode is always enabled)
+## proxyHeaders tells Keycloak to trust X-Forwarded-* headers from reverse proxy
+proxyHeaders: "xforwarded"
+httpRelativePath: "/"
+## hostnameStrict: if false, allows access via different hostnames (useful for port-forward, internal access)
+hostnameStrict: false
+
+## Init scripts (executed at first boot)
+initdbScripts: {}
+initdbScriptsConfigMap: ""
+
+## Extra environment variables
+extraEnvVars: []
+extraEnvVarsCM: ""
+extraEnvVarsSecret: ""
+
+## Keycloak statefulset parameters
+replicaCount: 1
+revisionHistoryLimitCount: 10
+
+## Pod Disruption Budget
+pdb:
+  enabled: true
+  maxUnavailable: 1
+  # minAvailable: 1  # Use either maxUnavailable or minAvailable, not both
+
+containerPorts:
+  http: 8080
+  https: 8443
+  metrics: 9000
+
+extraContainerPorts: []
+
+## Pod Security Context
+podSecurityContext:
+  enabled: true
+  fsGroupChangePolicy: Always
+  sysctls: []
+  supplementalGroups: []
+  fsGroup: 1001
+
+## Container Security Context
+containerSecurityContext:
+  enabled: true
+  seLinuxOptions: {}
+  runAsUser: 1001
+  runAsGroup: 1001
+  runAsNonRoot: true
+  privileged: false
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  seccompProfile:
+    type: "RuntimeDefault"
+
+## Resources
+resources: {}
+
+## Probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 300
+  periodSeconds: 1
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+  successThreshold: 1
+
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  timeoutSeconds: 1
+  failureThreshold: 60
+  successThreshold: 1
+
+## Custom probes (override defaults)
+customLivenessProbe: {}
+customReadinessProbe: {}
+customStartupProbe: {}
+
+## Pod scheduling
+podLabels: {}
+podAnnotations: {}
+affinity: {}
+nodeSelector: {}
+tolerations: []
+topologySpreadConstraints: []
+priorityClassName: ""
+schedulerName: ""
+
+## StatefulSet configuration
+podManagementPolicy: Parallel
+terminationGracePeriodSeconds: ""
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate: {}
+minReadySeconds: 0
+statefulsetAnnotations: {}
+
+## Volumes
+extraVolumes: []
+extraVolumeMounts: []
+
+## Init containers and sidecars
+enableDefaultInitContainers: true
+initContainers: []
+sidecars: []
+
+## Service configuration
+service:
+  type: ClusterIP
+  http:
+    enabled: true
+  ports:
+    http: 80
+    https: 443
+  nodePorts:
+    http: ""
+    https: ""
+  sessionAffinity: None
+  sessionAffinityConfig: {}
+  clusterIP: ""
+  annotations: {}
+  extraPorts: []
+  headless:
+    annotations: {}
+    extraPorts: []
+
+## Ingress configuration
+ingress:
+  enabled: false
+  ingressClassName: ""
+  pathType: ImplementationSpecific
+  hostname: keycloak.local
+  path: "{{ .Values.httpRelativePath }}"
+  servicePort: http
+  annotations: {}
+  labels: {}
+  tls: false
+  selfSigned: false
+  extraHosts: []
+  extraPaths: []
+  extraTls: []
+  extraRules: []
+
+## Network Policy
+networkPolicy:
+  enabled: true
+  allowExternal: true
+  allowExternalEgress: true
+  kubeAPIServerPorts: [443, 6443, 8443]
+  extraIngress: []
+  extraEgress: []
+  ingressNSMatchLabels: {}
+  ingressNSPodMatchLabels: {}
+
+## Service Account
+serviceAccount:
+  create: true
+  name: ""
+  automountServiceAccountToken: false
+  annotations: {}
+  extraLabels: {}
+
+## Metrics
+metrics:
+  enabled: false
+  service:
+    ports:
+      http: 8080
+      https: 8443
+      metrics: 9000
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "{{ .Values.metrics.service.ports.metrics }}"
+    extraPorts: []
+  serviceMonitor:
+    enabled: false
+    port: metrics
+    scheme: http
+    tlsConfig: {}
+    endpoints:
+      - path: '{{ include "keycloak.httpPath" . }}metrics'
+      - path: '{{ include "keycloak.httpPath" . }}realms/master/metrics'
+        port: http
+    namespace: ""
+    interval: 30s
+    scrapeTimeout: ""
+    labels: {}
+    selector: {}
+    relabelings: []
+    metricRelabelings: []
+    honorLabels: false
+    jobLabel: ""
+  prometheusRule:
+    enabled: false
+    namespace: ""
+    labels: {}
+    groups: []
+
+## External Database (PostgreSQL)
+externalDatabase:
+  host: ""
+  port: 5432
+  user: keycloak
+  database: keycloak
+  password: ""
+  existingSecret: ""
+  existingSecretHostKey: ""
+  existingSecretPortKey: ""
+  existingSecretUserKey: ""
+  existingSecretDatabaseKey: ""
+  existingSecretPasswordKey: ""
+
+## Cache configuration
+cache:
+  enabled: true
+  stackName: kubernetes
+  stackFile: ""
+
+## Logging
+logging:
+  output: default
+  level: INFO
+
+## Admin realm
+adminRealm: "master"
