@@ -1,0 +1,77 @@
+{{- if and .Values.query.enabled .Values.query.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "thanos.fullname" . }}-query
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: query
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: query
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- if .Values.query.networkPolicy.allowExternalEgress }}
+  egress:
+    - {}
+  {{- else }}
+  egress:
+    # Allow DNS resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Allow communication with storegateway
+    {{- if .Values.storegateway.enabled }}
+    - ports:
+        - port: 10901
+        - port: 10902
+      to:
+        - podSelector:
+            matchLabels:
+              {{- include "thanos.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: storegateway
+    {{- end }}
+    # Allow communication with Prometheus sidecars (external namespace)
+    {{- if .Values.query.dnsDiscovery.enabled }}
+    - ports:
+        - port: 10901
+      to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+    {{- end }}
+    {{- if .Values.query.networkPolicy.extraEgress }}
+    {{- toYaml .Values.query.networkPolicy.extraEgress | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  ingress:
+    - ports:
+        - port: 10902
+        - port: 10901
+      {{- if not .Values.query.networkPolicy.allowExternal }}
+      from:
+        - podSelector:
+            matchLabels:
+              {{- include "thanos.selectorLabels" . | nindent 14 }}
+        {{- if .Values.query.networkPolicy.ingressNSMatchLabels }}
+        - namespaceSelector:
+            matchLabels:
+              {{- toYaml .Values.query.networkPolicy.ingressNSMatchLabels | nindent 14 }}
+          {{- if .Values.query.networkPolicy.ingressNSPodMatchLabels }}
+          podSelector:
+            matchLabels:
+              {{- toYaml .Values.query.networkPolicy.ingressNSPodMatchLabels | nindent 14 }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- if .Values.query.networkPolicy.extraIngress }}
+    {{- toYaml .Values.query.networkPolicy.extraIngress | nindent 4 }}
+    {{- end }}
+{{- end }}

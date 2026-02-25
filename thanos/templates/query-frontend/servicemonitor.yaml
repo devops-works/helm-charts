@@ -1,0 +1,21 @@
+{{- if and .Values.queryFrontend.enabled .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "thanos.fullname" . }}-query-frontend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: query-frontend
+spec:
+  endpoints:
+    - port: http
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: query-frontend
+      prometheus-operator/monitor: "true"
+{{- end }}

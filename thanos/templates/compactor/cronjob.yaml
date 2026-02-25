@@ -1,0 +1,104 @@
+{{- if and .Values.compactor.enabled .Values.compactor.cronJob.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "thanos.fullname" . }}-compactor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: compactor
+spec:
+  schedule: {{ .Values.compactor.cronJob.schedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "thanos.labels" . | nindent 12 }}
+            app.kubernetes.io/component: compactor
+          annotations:
+            checksum/objstore-configuration: {{ include "thanos.objstoreConfig" . | sha256sum }}
+        spec:
+          serviceAccountName: {{ default (printf "%s-compactor" (include "thanos.fullname" .)) .Values.compactor.serviceAccount.name }}
+          automountServiceAccountToken: true
+          securityContext:
+            {{- include "thanos.podSecurityContext" . | nindent 12 }}
+          restartPolicy: Never
+          initContainers:
+            - name: fix-permissions
+              image: busybox:1.36
+              command: ["sh", "-c", "chown -R 65534:65534 /data || true"]
+              securityContext:
+                runAsUser: 0
+                runAsNonRoot: false
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+          {{- with .Values.compactor.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.compactor.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+            - name: compactor
+              image: {{ include "thanos.image" . }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                {{- include "thanos.containerSecurityContext" . | nindent 16 }}
+              args:
+                - compact
+                - --log.level={{ .Values.compactor.logLevel }}
+                - --log.format={{ .Values.compactor.logFormat }}
+                - --http-address=0.0.0.0:10902
+                - --data-dir=/data
+                - --retention.resolution-raw={{ .Values.compactor.retentionResolutionRaw }}
+                - --retention.resolution-5m={{ .Values.compactor.retentionResolution5m }}
+                - --retention.resolution-1h={{ .Values.compactor.retentionResolution1h }}
+                - --consistency-delay=30m
+                - --compact.concurrency=1
+                - --objstore.config-file=/conf/objstore.yml
+              ports:
+                - name: http
+                  containerPort: 10902
+                  protocol: TCP
+              livenessProbe:
+                failureThreshold: 6
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 30
+                httpGet:
+                  path: /-/healthy
+                  port: http
+                  scheme: HTTP
+              readinessProbe:
+                failureThreshold: 6
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 30
+                httpGet:
+                  path: /-/ready
+                  port: http
+                  scheme: HTTP
+              {{- with .Values.compactor.resources }}
+              resources:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              volumeMounts:
+                - name: objstore-config
+                  mountPath: /conf
+                - name: data
+                  mountPath: /data
+          volumes:
+            - name: objstore-config
+              secret:
+                secretName: {{ include "thanos.fullname" . }}-objstore-secret
+            - name: data
+              persistentVolumeClaim:
+                claimName: {{ include "thanos.fullname" . }}-compactor
+{{- end }}

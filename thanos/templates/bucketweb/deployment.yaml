@@ -1,0 +1,82 @@
+{{- if .Values.bucketweb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "thanos.fullname" . }}-bucketweb
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: bucketweb
+spec:
+  replicas: {{ .Values.bucketweb.replicaCount }}
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: bucketweb
+  template:
+    metadata:
+      labels:
+        {{- include "thanos.labels" . | nindent 8 }}
+        app.kubernetes.io/component: bucketweb
+      annotations:
+        checksum/objstore-configuration: {{ include "thanos.objstoreConfig" . | sha256sum }}
+    spec:
+      serviceAccountName: {{ default (printf "%s-bucketweb" (include "thanos.fullname" .)) .Values.bucketweb.serviceAccount.name }}
+      automountServiceAccountToken: true
+      securityContext:
+        {{- include "thanos.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: bucketweb
+          image: {{ include "thanos.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- include "thanos.containerSecurityContext" . | nindent 12 }}
+          args:
+            - tools
+            - bucket
+            - web
+            - --http-address=0.0.0.0:8080
+            - --log.level={{ .Values.bucketweb.logLevel }}
+            - --log.format={{ .Values.bucketweb.logFormat }}
+            - --objstore.config-file=/conf/objstore.yml
+            - --refresh={{ .Values.bucketweb.refresh }}
+            - --timeout={{ .Values.bucketweb.timeout }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+            httpGet:
+              path: /-/healthy
+              port: http
+              scheme: HTTP
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+            httpGet:
+              path: /-/ready
+              port: http
+              scheme: HTTP
+          {{- with .Values.bucketweb.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: objstore-config
+              mountPath: /conf
+      volumes:
+        - name: objstore-config
+          secret:
+            secretName: {{ include "thanos.fullname" . }}-objstore-secret
+{{- end }}

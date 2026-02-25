@@ -1,0 +1,21 @@
+{{- if and .Values.queryFrontend.enabled .Values.queryFrontend.pdb.create }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "thanos.fullname" . }}-query-frontend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: query-frontend
+spec:
+  {{- if .Values.queryFrontend.pdb.minAvailable }}
+  minAvailable: {{ .Values.queryFrontend.pdb.minAvailable }}
+  {{- end }}
+  {{- if or .Values.queryFrontend.pdb.maxUnavailable (not .Values.queryFrontend.pdb.minAvailable) }}
+  maxUnavailable: {{ .Values.queryFrontend.pdb.maxUnavailable | default 1 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: query-frontend
+{{- end }}

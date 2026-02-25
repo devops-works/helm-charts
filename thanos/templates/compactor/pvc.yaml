@@ -1,0 +1,19 @@
+{{- if and .Values.compactor.enabled .Values.compactor.cronJob.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "thanos.fullname" . }}-compactor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: compactor
+spec:
+  accessModes:
+    {{- toYaml .Values.compactor.persistence.accessModes | nindent 4 }}
+  {{- if .Values.compactor.persistence.storageClass }}
+  storageClassName: {{ .Values.compactor.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.compactor.persistence.size | quote }}
+{{- end }}

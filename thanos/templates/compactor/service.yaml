@@ -1,0 +1,21 @@
+{{- if .Values.compactor.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "thanos.fullname" . }}-compactor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: compactor
+    prometheus-operator/monitor: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9090
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "thanos.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: compactor
+{{- end }}

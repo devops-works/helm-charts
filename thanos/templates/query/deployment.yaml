@@ -1,0 +1,82 @@
+{{- if .Values.query.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "thanos.fullname" . }}-query
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: query
+spec:
+  replicas: {{ .Values.query.replicaCount }}
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: query
+  template:
+    metadata:
+      labels:
+        {{- include "thanos.labels" . | nindent 8 }}
+        app.kubernetes.io/component: query
+    spec:
+      serviceAccountName: {{ default (printf "%s-query" (include "thanos.fullname" .)) .Values.query.serviceAccount.name }}
+      automountServiceAccountToken: true
+      securityContext:
+        {{- include "thanos.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: query
+          image: {{ include "thanos.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- include "thanos.containerSecurityContext" . | nindent 12 }}
+          args:
+            - query
+            - --log.level={{ .Values.query.logLevel }}
+            - --log.format={{ .Values.query.logFormat }}
+            - --grpc-address=0.0.0.0:10901
+            - --http-address=0.0.0.0:10902
+            - --query.replica-label={{ .Values.query.replicaLabel }}
+            {{- if .Values.query.dnsDiscovery.enabled }}
+            - --endpoint=dnssrv+_grpc._tcp.{{ .Values.query.dnsDiscovery.sidecarsService }}.{{ .Values.query.dnsDiscovery.sidecarsNamespace }}.svc.cluster.local
+            {{- end }}
+            {{- if .Values.storegateway.enabled }}
+            - --endpoint=dnssrv+_grpc._tcp.{{ include "thanos.fullname" . }}-storegateway.{{ .Release.Namespace }}.svc.cluster.local
+            {{- end }}
+            {{- range .Values.query.extraFlags }}
+            - {{ . }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 10902
+              protocol: TCP
+            - name: grpc
+              containerPort: 10901
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+            httpGet:
+              path: /-/healthy
+              port: http
+              scheme: HTTP
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+            httpGet:
+              path: /-/ready
+              port: http
+              scheme: HTTP
+          {{- with .Values.query.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

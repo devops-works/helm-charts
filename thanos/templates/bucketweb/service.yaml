@@ -1,0 +1,21 @@
+{{- if .Values.bucketweb.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "thanos.fullname" . }}-bucketweb
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: bucketweb
+    prometheus-operator/monitor: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "thanos.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: bucketweb
+{{- end }}

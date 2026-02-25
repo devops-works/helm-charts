@@ -1,0 +1,164 @@
+# Thanos image configuration
+image:
+  repository: quay.io/thanos/thanos
+  tag: v0.41.0
+  pullPolicy: IfNotPresent
+
+# Object storage configuration
+# Supported types: GCS, S3, AZURE, SWIFT, COS, ALIYUNOSS, FILESYSTEM
+objstoreConfig:
+  type: ""
+  config: {}
+
+# Query component - main entry point for PromQL queries
+query:
+  enabled: true
+  replicaCount: 1
+  logLevel: info
+  logFormat: json
+  replicaLabel: prometheus_replica
+  extraFlags: []
+  dnsDiscovery:
+    enabled: false
+    sidecarsService: ""
+    sidecarsNamespace: ""
+  resources: {}
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
+  networkPolicy:
+    enabled: false
+    allowExternal: true
+    allowExternalEgress: true
+    extraIngress: []
+    extraEgress: []
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
+
+# Query Frontend component - caching and query splitting
+queryFrontend:
+  enabled: false
+  replicaCount: 1
+  logLevel: info
+  logFormat: json
+  resources: {}
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
+  networkPolicy:
+    enabled: false
+    allowExternal: true
+    allowExternalEgress: true
+    extraIngress: []
+    extraEgress: []
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
+
+# Store Gateway component - serves historical data from object storage
+storegateway:
+  enabled: true
+  replicaCount: 1
+  logLevel: info
+  logFormat: json
+  resources: {}
+  persistence:
+    enabled: true
+    size: 10Gi
+    accessModes:
+      - ReadWriteOnce
+    storageClass: ""
+  extraVolumes: []
+  extraVolumeMounts: []
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
+  networkPolicy:
+    enabled: false
+    allowExternal: true
+    allowExternalEgress: true
+    extraIngress: []
+    extraEgress: []
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
+
+# Compactor component - compacts and downsamples data in object storage
+compactor:
+  enabled: true
+  cronJob:
+    enabled: false
+    schedule: "0 */6 * * *"
+  logLevel: info
+  logFormat: json
+  retentionResolutionRaw: 30d
+  retentionResolution5m: 90d
+  retentionResolution1h: 365d
+  persistence:
+    size: 20Gi
+    accessModes:
+      - ReadWriteOnce
+    storageClass: ""
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+  networkPolicy:
+    enabled: false
+    allowExternal: true
+    allowExternalEgress: true
+    extraIngress: []
+    extraEgress: []
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
+
+# Bucket Web component - UI for inspecting object storage
+bucketweb:
+  enabled: false
+  replicaCount: 1
+  logLevel: info
+  logFormat: json
+  refresh: 30m
+  timeout: 5m
+  resources: {}
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
+  networkPolicy:
+    enabled: false
+    allowExternal: true
+    allowExternalEgress: true
+    extraIngress: []
+    extraEgress: []
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
+
+# Metrics and monitoring
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
+  prometheusRule:
+    enabled: false
+    disabled: {}

@@ -1,0 +1,21 @@
+{{- if and .Values.storegateway.enabled .Values.storegateway.pdb.create }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "thanos.fullname" . }}-storegateway
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storegateway
+spec:
+  {{- if .Values.storegateway.pdb.minAvailable }}
+  minAvailable: {{ .Values.storegateway.pdb.minAvailable }}
+  {{- end }}
+  {{- if or .Values.storegateway.pdb.maxUnavailable (not .Values.storegateway.pdb.minAvailable) }}
+  maxUnavailable: {{ .Values.storegateway.pdb.maxUnavailable | default 1 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: storegateway
+{{- end }}

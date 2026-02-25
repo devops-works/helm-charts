@@ -1,0 +1,289 @@
+{{- if and .Values.metrics.enabled .Values.metrics.prometheusRule.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "thanos.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+spec:
+  groups:
+    # Query rules
+    {{- if .Values.query.enabled }}
+    - name: thanos-query
+      rules:
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosQueryIsDown" | default false) }}
+        - alert: ThanosQueryIsDown
+          annotations:
+            summary: Thanos Query is down.
+            description: ThanosQuery has disappeared. Prometheus target for the component cannot be discovered.
+          expr: |
+            absent(up{job=~".*thanos.*query.*"} == 1)
+          for: 5m
+          labels:
+            severity: critical
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosQueryHttpRequestQueryErrorRateHigh" | default false) }}
+        - alert: ThanosQueryHttpRequestQueryErrorRateHigh
+          annotations:
+            summary: Thanos Query is failing to handle requests.
+            description: Thanos Query is failing to handle {{ "{{ $value | humanize }}" }}% of "query" requests.
+          expr: |
+            (
+              sum by (job) (rate(http_requests_total{code=~"5..", job=~".*thanos.*query.*", handler="query"}[5m]))
+            /
+              sum by (job) (rate(http_requests_total{job=~".*thanos.*query.*", handler="query"}[5m]))
+            ) * 100 > 5
+          for: 5m
+          labels:
+            severity: critical
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosQueryHttpRequestQueryRangeErrorRateHigh" | default false) }}
+        - alert: ThanosQueryHttpRequestQueryRangeErrorRateHigh
+          annotations:
+            summary: Thanos Query is failing to handle requests.
+            description: Thanos Query is failing to handle {{ "{{ $value | humanize }}" }}% of "query_range" requests.
+          expr: |
+            (
+              sum by (job) (rate(http_requests_total{code=~"5..", job=~".*thanos.*query.*", handler="query_range"}[5m]))
+            /
+              sum by (job) (rate(http_requests_total{job=~".*thanos.*query.*", handler="query_range"}[5m]))
+            ) * 100 > 5
+          for: 5m
+          labels:
+            severity: critical
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosQueryGrpcServerErrorRate" | default false) }}
+        - alert: ThanosQueryGrpcServerErrorRate
+          annotations:
+            summary: Thanos Query is failing to handle requests.
+            description: Thanos Query is failing to handle {{ "{{ $value | humanize }}" }}% of requests.
+          expr: |
+            (
+              sum by (job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job=~".*thanos.*query.*"}[5m]))
+            /
+              sum by (job) (rate(grpc_server_started_total{job=~".*thanos.*query.*"}[5m]))
+            ) * 100 > 5
+          for: 5m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosQueryGrpcClientErrorRate" | default false) }}
+        - alert: ThanosQueryGrpcClientErrorRate
+          annotations:
+            summary: Thanos Query is failing to send requests.
+            description: Thanos Query is failing to send {{ "{{ $value | humanize }}" }}% of requests.
+          expr: |
+            (
+              sum by (job) (rate(grpc_client_handled_total{grpc_code!="OK", job=~".*thanos.*query.*"}[5m]))
+            /
+              sum by (job) (rate(grpc_client_started_total{job=~".*thanos.*query.*"}[5m]))
+            ) * 100 > 5
+          for: 5m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosQueryHighDNSFailures" | default false) }}
+        - alert: ThanosQueryHighDNSFailures
+          annotations:
+            summary: Thanos Query is having high number of DNS failures.
+            description: Thanos Query is having {{ "{{ $value | humanize }}" }}% of failing DNS queries for store endpoints.
+          expr: |
+            (
+              sum by (job) (rate(thanos_query_store_apis_dns_failures_total{job=~".*thanos.*query.*"}[5m]))
+            /
+              sum by (job) (rate(thanos_query_store_apis_dns_lookups_total{job=~".*thanos.*query.*"}[5m]))
+            ) * 100 > 1
+          for: 15m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosQueryInstantLatencyHigh" | default false) }}
+        - alert: ThanosQueryInstantLatencyHigh
+          annotations:
+            summary: Thanos Query has high latency for instant queries.
+            description: Thanos Query has a 99th percentile latency of {{ "{{ $value }}" }} seconds for instant queries.
+          expr: |
+            (
+              histogram_quantile(0.99, sum by (job, le) (rate(http_request_duration_seconds_bucket{job=~".*thanos.*query.*", handler="query"}[5m]))) > 40
+            and
+              sum by (job) (rate(http_request_duration_seconds_bucket{job=~".*thanos.*query.*", handler="query"}[5m])) > 0
+            )
+          for: 10m
+          labels:
+            severity: critical
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosQueryRangeLatencyHigh" | default false) }}
+        - alert: ThanosQueryRangeLatencyHigh
+          annotations:
+            summary: Thanos Query has high latency for range queries.
+            description: Thanos Query has a 99th percentile latency of {{ "{{ $value }}" }} seconds for range queries.
+          expr: |
+            (
+              histogram_quantile(0.99, sum by (job, le) (rate(http_request_duration_seconds_bucket{job=~".*thanos.*query.*", handler="query_range"}[5m]))) > 90
+            and
+              sum by (job) (rate(http_request_duration_seconds_bucket{job=~".*thanos.*query.*", handler="query_range"}[5m])) > 0
+            )
+          for: 10m
+          labels:
+            severity: critical
+        {{- end }}
+    {{- end }}
+
+    # Store Gateway rules
+    {{- if .Values.storegateway.enabled }}
+    - name: thanos-store
+      rules:
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosStoreIsDown" | default false) }}
+        - alert: ThanosStoreIsDown
+          annotations:
+            summary: Thanos Store is down.
+            description: ThanosStore has disappeared. Prometheus target for the component cannot be discovered.
+          expr: |
+            absent(up{job=~".*thanos.*store.*"} == 1)
+          for: 5m
+          labels:
+            severity: critical
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosStoreGrpcErrorRate" | default false) }}
+        - alert: ThanosStoreGrpcErrorRate
+          annotations:
+            summary: Thanos Store is failing to handle gRPC requests.
+            description: Thanos Store is failing to handle {{ "{{ $value | humanize }}" }}% of requests.
+          expr: |
+            (
+              sum by (job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|Internal|Unavailable|DataLoss|DeadlineExceeded", job=~".*thanos.*store.*"}[5m]))
+            /
+              sum by (job) (rate(grpc_server_started_total{job=~".*thanos.*store.*"}[5m]))
+            ) * 100 > 5
+          for: 5m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosStoreSeriesGateLatencyHigh" | default false) }}
+        - alert: ThanosStoreSeriesGateLatencyHigh
+          annotations:
+            summary: Thanos Store has high latency for store series gate requests.
+            description: Thanos Store has a 99th percentile latency of {{ "{{ $value }}" }} seconds for store series gate requests.
+          expr: |
+            (
+              histogram_quantile(0.99, sum by (job, le) (rate(thanos_bucket_store_series_gate_duration_seconds_bucket{job=~".*thanos.*store.*"}[5m]))) > 2
+            and
+              sum by (job) (rate(thanos_bucket_store_series_gate_duration_seconds_bucket{job=~".*thanos.*store.*"}[5m])) > 0
+            )
+          for: 10m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosStoreBucketHighOperationFailures" | default false) }}
+        - alert: ThanosStoreBucketHighOperationFailures
+          annotations:
+            summary: Thanos Store is having high number of bucket operation failures.
+            description: Thanos Store is failing to do {{ "{{ $value | humanize }}" }}% of bucket operations.
+          expr: |
+            (
+              sum by (job) (rate(thanos_objstore_bucket_operation_failures_total{job=~".*thanos.*store.*"}[5m]))
+            /
+              sum by (job) (rate(thanos_objstore_bucket_operations_total{job=~".*thanos.*store.*"}[5m]))
+            ) * 100 > 5
+          for: 15m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosStoreObjstoreOperationLatencyHigh" | default false) }}
+        - alert: ThanosStoreObjstoreOperationLatencyHigh
+          annotations:
+            summary: Thanos Store is having high latency for bucket operations.
+            description: Thanos Store has a 99th percentile latency of {{ "{{ $value }}" }} seconds for the bucket operations.
+          expr: |
+            (
+              histogram_quantile(0.99, sum by (job, le) (rate(thanos_objstore_bucket_operation_duration_seconds_bucket{job=~".*thanos.*store.*"}[5m]))) > 2
+            and
+              sum by (job) (rate(thanos_objstore_bucket_operation_duration_seconds_bucket{job=~".*thanos.*store.*"}[5m])) > 0
+            )
+          for: 10m
+          labels:
+            severity: warning
+        {{- end }}
+    {{- end }}
+
+    # Compactor rules
+    {{- if .Values.compactor.enabled }}
+    - name: thanos-compact
+      rules:
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosCompactIsDown" | default false) }}
+        - alert: ThanosCompactIsDown
+          annotations:
+            summary: Thanos Compact is down.
+            description: ThanosCompact has disappeared. Prometheus target for the component cannot be discovered.
+          expr: |
+            absent(up{job=~".*thanos.*compact.*"} == 1)
+          for: 5m
+          labels:
+            severity: critical
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosCompactMultipleRunning" | default false) }}
+        - alert: ThanosCompactMultipleRunning
+          annotations:
+            summary: Multiple Thanos Compact instances are running.
+            description: No more than one Thanos Compact instance should be running at once. There are {{ "{{ $value }}" }} instances running.
+          expr: |
+            sum by (job) (up{job=~".*thanos.*compact.*"}) > 1
+          for: 5m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosCompactHalted" | default false) }}
+        - alert: ThanosCompactHalted
+          annotations:
+            summary: Thanos Compact has halted.
+            description: Thanos Compact has failed to run and is now halted.
+          expr: |
+            thanos_compact_halted{job=~".*thanos.*compact.*"} == 1
+          for: 5m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosCompactHighCompactionFailures" | default false) }}
+        - alert: ThanosCompactHighCompactionFailures
+          annotations:
+            summary: Thanos Compact is having high number of compaction failures.
+            description: Thanos Compact is failing to execute {{ "{{ $value | humanize }}" }}% of compactions.
+          expr: |
+            (
+              sum by (job) (rate(thanos_compact_group_compactions_failures_total{job=~".*thanos.*compact.*"}[5m]))
+            /
+              sum by (job) (rate(thanos_compact_group_compactions_total{job=~".*thanos.*compact.*"}[5m]))
+            ) * 100 > 5
+          for: 15m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosCompactBucketHighOperationFailures" | default false) }}
+        - alert: ThanosCompactBucketHighOperationFailures
+          annotations:
+            summary: Thanos Compact is having high number of bucket operation failures.
+            description: Thanos Compact is failing to do {{ "{{ $value | humanize }}" }}% of bucket operations.
+          expr: |
+            (
+              sum by (job) (rate(thanos_objstore_bucket_operation_failures_total{job=~".*thanos.*compact.*"}[5m]))
+            /
+              sum by (job) (rate(thanos_objstore_bucket_operations_total{job=~".*thanos.*compact.*"}[5m]))
+            ) * 100 > 5
+          for: 15m
+          labels:
+            severity: warning
+        {{- end }}
+        {{- if not (index .Values.metrics.prometheusRule.disabled "ThanosCompactHasNotRun" | default false) }}
+        - alert: ThanosCompactHasNotRun
+          annotations:
+            summary: Thanos Compact has not uploaded anything in a long time.
+            description: Thanos Compact has not uploaded anything for a long period of time.
+          expr: |
+            (time() - max by (job) (max_over_time(thanos_objstore_bucket_last_successful_upload_time{job=~".*thanos.*compact.*"}[24h]))) / 60 / 60 > 24
+          for: 10m
+          labels:
+            severity: warning
+        {{- end }}
+    {{- end }}
+{{- end }}

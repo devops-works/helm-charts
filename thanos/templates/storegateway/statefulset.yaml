@@ -1,0 +1,119 @@
+{{- if .Values.storegateway.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "thanos.fullname" . }}-storegateway
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storegateway
+spec:
+  replicas: {{ .Values.storegateway.replicaCount }}
+  revisionHistoryLimit: 10
+  podManagementPolicy: OrderedReady
+  serviceName: {{ include "thanos.fullname" . }}-storegateway-headless
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: storegateway
+  template:
+    metadata:
+      labels:
+        {{- include "thanos.labels" . | nindent 8 }}
+        app.kubernetes.io/component: storegateway
+      annotations:
+        checksum/objstore-configuration: {{ include "thanos.objstoreConfig" . | sha256sum }}
+    spec:
+      serviceAccountName: {{ default (printf "%s-storegateway" (include "thanos.fullname" .)) .Values.storegateway.serviceAccount.name }}
+      automountServiceAccountToken: true
+      securityContext:
+        {{- include "thanos.podSecurityContext" . | nindent 8 }}
+      initContainers:
+        - name: fix-permissions
+          image: busybox:1.36
+          command: ["sh", "-c", "chown -R 65534:65534 /data || true"]
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: storegateway
+          image: {{ include "thanos.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- include "thanos.containerSecurityContext" . | nindent 12 }}
+          args:
+            - store
+            - --log.level={{ .Values.storegateway.logLevel }}
+            - --log.format={{ .Values.storegateway.logFormat }}
+            - --grpc-address=0.0.0.0:10901
+            - --http-address=0.0.0.0:10902
+            - --data-dir=/data
+            - --objstore.config-file=/conf/objstore.yml
+          ports:
+            - name: http
+              containerPort: 10902
+              protocol: TCP
+            - name: grpc
+              containerPort: 10901
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+            httpGet:
+              path: /-/healthy
+              port: http
+              scheme: HTTP
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+            httpGet:
+              path: /-/ready
+              port: http
+              scheme: HTTP
+          {{- with .Values.storegateway.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: objstore-config
+              mountPath: /conf
+            - name: data
+              mountPath: /data
+            {{- with .Values.storegateway.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: objstore-config
+          secret:
+            secretName: {{ include "thanos.fullname" . }}-objstore-secret
+        {{- with .Values.storegateway.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  {{- if .Values.storegateway.persistence.enabled }}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          {{- toYaml .Values.storegateway.persistence.accessModes | nindent 10 }}
+        {{- if .Values.storegateway.persistence.storageClass }}
+        storageClassName: {{ .Values.storegateway.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.storegateway.persistence.size | quote }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,69 @@
+{{- if and .Values.storegateway.enabled .Values.storegateway.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "thanos.fullname" . }}-storegateway
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storegateway
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: storegateway
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- if .Values.storegateway.networkPolicy.allowExternalEgress }}
+  egress:
+    - {}
+  {{- else }}
+  egress:
+    # Allow DNS resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Allow communication between storegateway instances
+    - ports:
+        - port: 10901
+        - port: 10902
+      to:
+        - podSelector:
+            matchLabels:
+              {{- include "thanos.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: storegateway
+    # Allow HTTPS egress to GCS (port 443)
+    - ports:
+        - port: 443
+          protocol: TCP
+    {{- if .Values.storegateway.networkPolicy.extraEgress }}
+    {{- toYaml .Values.storegateway.networkPolicy.extraEgress | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  ingress:
+    - ports:
+        - port: 10902
+        - port: 10901
+      {{- if not .Values.storegateway.networkPolicy.allowExternal }}
+      from:
+        - podSelector:
+            matchLabels:
+              {{- include "thanos.selectorLabels" . | nindent 14 }}
+        {{- if .Values.storegateway.networkPolicy.ingressNSMatchLabels }}
+        - namespaceSelector:
+            matchLabels:
+              {{- toYaml .Values.storegateway.networkPolicy.ingressNSMatchLabels | nindent 14 }}
+          {{- if .Values.storegateway.networkPolicy.ingressNSPodMatchLabels }}
+          podSelector:
+            matchLabels:
+              {{- toYaml .Values.storegateway.networkPolicy.ingressNSPodMatchLabels | nindent 14 }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- if .Values.storegateway.networkPolicy.extraIngress }}
+    {{- toYaml .Values.storegateway.networkPolicy.extraIngress | nindent 4 }}
+    {{- end }}
+{{- end }}

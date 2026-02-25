@@ -1,0 +1,59 @@
+{{- if and .Values.bucketweb.enabled .Values.bucketweb.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "thanos.fullname" . }}-bucketweb
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: bucketweb
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: bucketweb
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- if .Values.bucketweb.networkPolicy.allowExternalEgress }}
+  egress:
+    - {}
+  {{- else }}
+  egress:
+    # Allow DNS resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Allow HTTPS egress to GCS (port 443)
+    - ports:
+        - port: 443
+          protocol: TCP
+    {{- if .Values.bucketweb.networkPolicy.extraEgress }}
+    {{- toYaml .Values.bucketweb.networkPolicy.extraEgress | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  ingress:
+    - ports:
+        - port: 8080
+      {{- if not .Values.bucketweb.networkPolicy.allowExternal }}
+      from:
+        - podSelector:
+            matchLabels:
+              {{- include "thanos.selectorLabels" . | nindent 14 }}
+        {{- if .Values.bucketweb.networkPolicy.ingressNSMatchLabels }}
+        - namespaceSelector:
+            matchLabels:
+              {{- toYaml .Values.bucketweb.networkPolicy.ingressNSMatchLabels | nindent 14 }}
+          {{- if .Values.bucketweb.networkPolicy.ingressNSPodMatchLabels }}
+          podSelector:
+            matchLabels:
+              {{- toYaml .Values.bucketweb.networkPolicy.ingressNSPodMatchLabels | nindent 14 }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- if .Values.bucketweb.networkPolicy.extraIngress }}
+    {{- toYaml .Values.bucketweb.networkPolicy.extraIngress | nindent 4 }}
+    {{- end }}
+{{- end }}

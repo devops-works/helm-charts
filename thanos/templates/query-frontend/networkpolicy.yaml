@@ -1,0 +1,66 @@
+{{- if and .Values.queryFrontend.enabled .Values.queryFrontend.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "thanos.fullname" . }}-query-frontend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos.labels" . | nindent 4 }}
+    app.kubernetes.io/component: query-frontend
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "thanos.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: query-frontend
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- if .Values.queryFrontend.networkPolicy.allowExternalEgress }}
+  egress:
+    - {}
+  {{- else }}
+  egress:
+    # Allow DNS resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Allow communication with query
+    {{- if .Values.query.enabled }}
+    - ports:
+        - port: 10902
+        - port: 10901
+      to:
+        - podSelector:
+            matchLabels:
+              {{- include "thanos.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: query
+    {{- end }}
+    {{- if .Values.queryFrontend.networkPolicy.extraEgress }}
+    {{- toYaml .Values.queryFrontend.networkPolicy.extraEgress | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  ingress:
+    - ports:
+        - port: 10902
+      {{- if not .Values.queryFrontend.networkPolicy.allowExternal }}
+      from:
+        - podSelector:
+            matchLabels:
+              {{- include "thanos.selectorLabels" . | nindent 14 }}
+        {{- if .Values.queryFrontend.networkPolicy.ingressNSMatchLabels }}
+        - namespaceSelector:
+            matchLabels:
+              {{- toYaml .Values.queryFrontend.networkPolicy.ingressNSMatchLabels | nindent 14 }}
+          {{- if .Values.queryFrontend.networkPolicy.ingressNSPodMatchLabels }}
+          podSelector:
+            matchLabels:
+              {{- toYaml .Values.queryFrontend.networkPolicy.ingressNSPodMatchLabels | nindent 14 }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- if .Values.queryFrontend.networkPolicy.extraIngress }}
+    {{- toYaml .Values.queryFrontend.networkPolicy.extraIngress | nindent 4 }}
+    {{- end }}
+{{- end }}
