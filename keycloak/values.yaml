@@ -8,13 +8,10 @@ clusterDomain: cluster.local
 
 ## Keycloak image
 image:
-  registry: docker.io
-  repository: keycloak/keycloak
+  repository: docker.io/keycloak/keycloak
   tag: "26.1.4"
-  digest: ""
   pullPolicy: IfNotPresent
   pullSecrets: []
-  debug: false
 
 ## Keycloak authentication
 auth:

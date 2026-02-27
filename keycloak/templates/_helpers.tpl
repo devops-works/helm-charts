@@ -64,23 +64,16 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Return the proper image name
 */}}
 {{- define "keycloak.image" -}}
-{{- $registry := .Values.image.registry -}}
-{{- $repository := .Values.image.repository -}}
-{{- $tag := .Values.image.tag | default .Chart.AppVersion -}}
-{{- if .Values.image.digest }}
-{{- printf "%s/%s@%s" $registry $repository .Values.image.digest }}
-{{- else }}
-{{- printf "%s/%s:%s" $registry $repository $tag }}
-{{- end }}
+{{- printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
 {{- end }}
 
 {{/*
 Return the proper image pull secrets
 */}}
 {{- define "keycloak.imagePullSecrets" -}}
-{{- if .Values.image.pullSecrets }}
+{{- with .Values.image.pullSecrets }}
 imagePullSecrets:
-{{- range .Values.image.pullSecrets }}
+{{- range . }}
   - name: {{ . }}
 {{- end }}
 {{- end }}
