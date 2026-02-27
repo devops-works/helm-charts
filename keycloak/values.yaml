@@ -30,10 +30,6 @@ httpRelativePath: "/"
 ## hostnameStrict: if false, allows access via different hostnames (useful for port-forward, internal access)
 hostnameStrict: false
 
-## Init scripts (executed at first boot)
-initdbScripts: {}
-initdbScriptsConfigMap: ""
-
 ## Extra environment variables
 extraEnvVars: []
 extraEnvVarsCM: ""
@@ -57,19 +53,21 @@ containerPorts:
 extraContainerPorts: []
 
 ## Pod Security Context
+## Official Keycloak image runs as user 1000, group 0 (root)
 podSecurityContext:
   enabled: true
   fsGroupChangePolicy: Always
   sysctls: []
   supplementalGroups: []
-  fsGroup: 1001
+  fsGroup: 0
 
 ## Container Security Context
+## Official Keycloak image runs as user 1000, group 0 (root)
 containerSecurityContext:
   enabled: true
   seLinuxOptions: {}
-  runAsUser: 1001
-  runAsGroup: 1001
+  runAsUser: 1000
+  runAsGroup: 0
   runAsNonRoot: true
   privileged: false
   readOnlyRootFilesystem: true

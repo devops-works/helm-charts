@@ -77,7 +77,6 @@ spec:
               echo "Copying writable dirs to empty dir"
               cp -r --preserve=mode /opt/keycloak/lib/quarkus /emptydir/app-quarkus-dir
               cp -r --preserve=mode /opt/keycloak/data /emptydir/app-data-dir
-              cp -r --preserve=mode /opt/keycloak/providers /emptydir/app-providers-dir
               echo "Copy operation completed"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -104,9 +103,6 @@ spec:
             - /opt/keycloak/bin/kc.sh
           args:
             - start
-            {{- if or .Values.initdbScriptsConfigMap .Values.initdbScripts }}
-            - --config-file=/opt/keycloak/conf/keycloak.conf
-            {{- end }}
           env:
             - name: KUBERNETES_NAMESPACE
               valueFrom:
@@ -183,21 +179,11 @@ spec:
               mountPath: /tmp
               subPath: tmp-dir
             - name: empty-dir
-              mountPath: /opt/keycloak/conf
-              subPath: app-conf-dir
-            - name: empty-dir
               mountPath: /opt/keycloak/lib/quarkus
               subPath: app-quarkus-dir
             - name: empty-dir
               mountPath: /opt/keycloak/data
               subPath: app-data-dir
-            - name: empty-dir
-              mountPath: /opt/keycloak/providers
-              subPath: app-providers-dir
-            {{- if or .Values.initdbScriptsConfigMap .Values.initdbScripts }}
-            - name: custom-init-scripts
-              mountPath: /docker-entrypoint-initdb.d
-            {{- end }}
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -207,12 +193,6 @@ spec:
       volumes:
         - name: empty-dir
           emptyDir: {}
-        {{- if or .Values.initdbScriptsConfigMap .Values.initdbScripts }}
-        - name: custom-init-scripts
-          configMap:
-            name: {{ include "keycloak.initdbScriptsCM" . }}
-            defaultMode: 0755
-        {{- end }}
         {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

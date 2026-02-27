@@ -109,17 +109,6 @@ Return the path Keycloak is hosted on with trailing slash
 {{- end }}
 
 {{/*
-Return the Keycloak initdb scripts configmap name
-*/}}
-{{- define "keycloak.initdbScriptsCM" -}}
-{{- if .Values.initdbScriptsConfigMap }}
-{{- .Values.initdbScriptsConfigMap }}
-{{- else }}
-{{- printf "%s-init-scripts" (include "keycloak.fullname" .) }}
-{{- end }}
-{{- end }}
-
-{{/*
 Return the secret containing the Keycloak admin password
 */}}
 {{- define "keycloak.secretName" -}}
