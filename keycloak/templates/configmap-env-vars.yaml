@@ -44,11 +44,13 @@ data:
   ## Cache settings
   {{- if .Values.cache.enabled }}
   KC_CACHE: "ispn"
-  KC_CACHE_STACK: {{ .Values.cache.stackName | default "kubernetes" | quote }}
+  KC_CACHE_STACK: {{ .Values.cache.stackName | default "jdbc-ping" | quote }}
   {{- if .Values.cache.stackFile }}
   KC_CACHE_CONFIG_FILE: {{ .Values.cache.stackFile | quote }}
   {{- end }}
+  {{- if eq (.Values.cache.stackName | default "jdbc-ping") "kubernetes" }}
   JAVA_OPTS_APPEND: {{ printf "-Djgroups.dns.query=%s-headless.%s.svc.%s" (include "keycloak.fullname" .) (include "keycloak.namespace" .) .Values.clusterDomain | quote }}
+  {{- end }}
   {{- else }}
   KC_CACHE: "local"
   {{- end }}
