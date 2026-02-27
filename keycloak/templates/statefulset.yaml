@@ -156,7 +156,7 @@ spec:
           startupProbe: {{- omit .Values.startupProbe "enabled" | toYaml | nindent 12 }}
             httpGet:
               path: /health/started
-              port: http
+              port: {{ .Values.containerPorts.metrics }}
           {{- end }}
           {{- if .Values.customLivenessProbe }}
           livenessProbe: {{- toYaml .Values.customLivenessProbe | nindent 12 }}
@@ -164,7 +164,7 @@ spec:
           livenessProbe: {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
             httpGet:
               path: /health/live
-              port: http
+              port: {{ .Values.containerPorts.metrics }}
           {{- end }}
           {{- if .Values.customReadinessProbe }}
           readinessProbe: {{- toYaml .Values.customReadinessProbe | nindent 12 }}
@@ -172,7 +172,7 @@ spec:
           readinessProbe: {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
             httpGet:
               path: /health/ready
-              port: http
+              port: {{ .Values.containerPorts.metrics }}
           {{- end }}
           volumeMounts:
             - name: empty-dir
