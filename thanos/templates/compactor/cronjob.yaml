@@ -61,6 +61,9 @@ spec:
                 - --consistency-delay=30m
                 - --compact.concurrency=1
                 - --objstore.config-file=/conf/objstore.yml
+                {{- range .Values.compactor.extraFlags }}
+                - {{ . }}
+                {{- end }}
               ports:
                 - name: http
                   containerPort: 10902

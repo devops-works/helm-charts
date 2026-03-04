@@ -104,6 +104,7 @@ compactor:
     schedule: "0 */6 * * *"
   logLevel: info
   logFormat: json
+  extraFlags: []
   retentionResolutionRaw: 30d
   retentionResolution5m: 90d
   retentionResolution1h: 365d
