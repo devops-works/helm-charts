@@ -1,0 +1,15 @@
+apiVersion: v2
+name: rabbitmq-cluster-operator
+description: >-
+  Helm chart for the RabbitMQ Cluster Operator.
+  Wraps the official upstream manifests from
+  https://github.com/rabbitmq/cluster-operator
+type: application
+version: 0.1.0
+appVersion: "v2.19.1"
+home: https://github.com/rabbitmq/cluster-operator
+sources:
+  - https://github.com/rabbitmq/cluster-operator
+maintainers:
+  - name: devopsworks
+    email: support@devops.works

@@ -1,0 +1,41 @@
+## RabbitMQ Cluster Operator configuration
+## Based on upstream v2.19.1 manifests
+
+image:
+  repository: rabbitmqoperator/cluster-operator
+  tag: "2.19.1"
+  pullPolicy: IfNotPresent
+
+replicas: 1
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 500Mi
+  requests:
+    cpu: 200m
+    memory: 500Mi
+
+serviceAccount:
+  # Annotations to add to the service account (e.g. for IRSA, Workload Identity)
+  annotations: {}
+
+podAnnotations: {}
+
+podLabels: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Override the security context for the operator container
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault

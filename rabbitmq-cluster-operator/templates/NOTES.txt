@@ -1,0 +1,24 @@
+RabbitMQ Cluster Operator {{ .Chart.AppVersion }} has been deployed.
+
+Namespace: {{ .Release.Namespace }}
+Image:     {{ .Values.image.repository }}:{{ .Values.image.tag }}
+
+The CRD "rabbitmqclusters.rabbitmq.com" has been installed.
+
+To create a RabbitMQ cluster, apply a RabbitmqCluster resource:
+
+  apiVersion: rabbitmq.com/v1beta1
+  kind: RabbitmqCluster
+  metadata:
+    name: my-rabbitmq
+  spec:
+    replicas: 3
+
+NOTE: Helm does not upgrade CRDs automatically. When updating the
+operator version, apply the new CRD manually if needed:
+
+  kubectl apply -f crds/rabbitmqclusters.yaml
+
+Or use the update script to fetch the latest manifests:
+
+  python update-script/update-operator.py <version>
