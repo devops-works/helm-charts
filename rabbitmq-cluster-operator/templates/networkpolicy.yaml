@@ -1,0 +1,46 @@
+## NetworkPolicy: rabbitmq-cluster-operator
+## Controls ingress and egress traffic for the operator
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rabbitmq-cluster-operator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "rabbitmq-cluster-operator.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "rabbitmq-cluster-operator.podSelectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- if .Values.networkPolicy.allowExternalEgress }}
+  egress:
+    - {}
+  {{- else }}
+  egress:
+    # Allow DNS resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Allow access to kube-apiserver
+    - ports:
+        - port: 443
+        - port: 6443
+    # Allow communication with RabbitMQ pods
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: rabbitmq
+    {{- with .Values.networkPolicy.extraEgress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.networkPolicy.extraIngress }}
+  ingress:
+    {{- toYaml .Values.networkPolicy.extraIngress | nindent 4 }}
+  {{- end }}
+{{- end }}

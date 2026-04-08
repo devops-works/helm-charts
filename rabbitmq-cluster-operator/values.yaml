@@ -39,3 +39,36 @@ securityContext:
   runAsNonRoot: true
   seccompProfile:
     type: RuntimeDefault
+
+## Metrics configuration
+metrics:
+  service:
+    # Enable metrics service
+    enabled: true
+    # Service port for metrics
+    port: 9782
+    # Annotations for the metrics service
+    annotations: {}
+
+  serviceMonitor:
+    # Enable ServiceMonitor for Prometheus Operator
+    enabled: false
+    # Scrape interval
+    interval: 30s
+    # Scrape timeout
+    scrapeTimeout: 10s
+    # Additional labels for the ServiceMonitor
+    labels: {}
+    # Namespace for the ServiceMonitor (defaults to Release namespace)
+    # namespace: monitoring
+
+## Network Policy configuration
+networkPolicy:
+  # Enable network policy
+  enabled: false
+  # Allow all external egress traffic (permissive mode)
+  allowExternalEgress: true
+  # Additional ingress rules (e.g., to allow Prometheus scraping)
+  extraIngress: []
+  # Additional egress rules
+  extraEgress: []

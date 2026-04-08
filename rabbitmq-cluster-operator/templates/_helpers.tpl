@@ -3,6 +3,7 @@ Common labels
 */}}
 {{- define "rabbitmq-cluster-operator.labels" -}}
 app.kubernetes.io/component: rabbitmq-operator
+app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/name: rabbitmq-cluster-operator
 app.kubernetes.io/part-of: rabbitmq
 app.kubernetes.io/managed-by: {{ .Release.Service }}
@@ -15,4 +16,14 @@ Selector labels (used by Deployment matchLabels)
 */}}
 {{- define "rabbitmq-cluster-operator.selectorLabels" -}}
 app.kubernetes.io/name: rabbitmq-cluster-operator
+{{- end }}
+
+{{/*
+Pod selector labels for NetworkPolicy
+*/}}
+{{- define "rabbitmq-cluster-operator.podSelectorLabels" -}}
+app.kubernetes.io/component: rabbitmq-operator
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/name: rabbitmq-cluster-operator
+app.kubernetes.io/part-of: rabbitmq
 {{- end }}

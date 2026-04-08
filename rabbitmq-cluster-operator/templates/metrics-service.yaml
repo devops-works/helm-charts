@@ -1,0 +1,24 @@
+## Service: rabbitmq-cluster-operator-metrics
+## Exposes metrics endpoint for Prometheus scraping
+{{- if .Values.metrics.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-cluster-operator-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "rabbitmq-cluster-operator.labels" . | nindent 4 }}
+  {{- with .Values.metrics.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: {{ .Values.metrics.service.port }}
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    {{- include "rabbitmq-cluster-operator.selectorLabels" . | nindent 4 }}
+{{- end }}

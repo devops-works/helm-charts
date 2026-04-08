@@ -5,7 +5,7 @@ description: >-
   Wraps the official upstream manifests from
   https://github.com/rabbitmq/cluster-operator
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "v2.19.1"
 home: https://github.com/rabbitmq/cluster-operator
 sources:
