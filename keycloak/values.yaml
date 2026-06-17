@@ -9,7 +9,7 @@ clusterDomain: cluster.local
 ## Keycloak image
 image:
   repository: docker.io/keycloak/keycloak
-  tag: "26.1.4"
+  tag: "26.6.1"
   pullPolicy: IfNotPresent
   pullSecrets: []
 
@@ -170,6 +170,30 @@ ingress:
   extraHosts: []
   extraPaths: []
   extraTls: []
+  extraRules: []
+
+## HTTPRoute configuration (Gateway API)
+httpRoute:
+  enabled: false
+  annotations: {}
+  labels: {}
+  ## Parent Gateway references this HTTPRoute attaches to.
+  ## When empty, defaults to a Gateway named "gateway" in the release namespace.
+  ## e.g:
+  ## parentRefs:
+  ##   - name: gateway
+  ##     namespace: gateway-system
+  ##     sectionName: https
+  parentRefs: []
+  hostnames:
+    - keycloak.local
+  servicePort: ""
+  matches:
+    - path:
+        type: PathPrefix
+        value: "{{ .Values.httpRelativePath }}"
+  filters: []
+  timeouts: {}
   extraRules: []
 
 ## Network Policy
