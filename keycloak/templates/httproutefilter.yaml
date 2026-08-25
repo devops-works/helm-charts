@@ -1,0 +1,22 @@
+{{- /*
+Envoy Gateway HTTPRouteFilter answering 403 for httpRoute.blockedPaths.
+Not part of the Gateway API spec: requires Envoy Gateway.
+*/}}
+{{- if and .Values.httpRoute.enabled .Values.httpRoute.blockedPaths }}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: HTTPRouteFilter
+metadata:
+  name: {{ printf "%s-deny" (include "keycloak.fullname" .) }}
+  namespace: {{ include "keycloak.namespace" . | quote }}
+  labels: {{- include "keycloak.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+  {{- with .Values.commonAnnotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  directResponse:
+    statusCode: 403
+    body:
+      type: Inline
+      inline: "Forbidden"
+{{- end }}

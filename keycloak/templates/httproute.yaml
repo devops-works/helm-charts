@@ -33,6 +33,18 @@ spec:
   hostnames: {{- include "keycloak.render" (dict "value" . "context" $) | nindent 4 }}
   {{- end }}
   rules:
+    {{- range .Values.httpRoute.blockedPaths }}
+    - matches:
+        - path:
+            type: RegularExpression
+            value: {{ . | quote }}
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: gateway.envoyproxy.io
+            kind: HTTPRouteFilter
+            name: {{ printf "%s-deny" (include "keycloak.fullname" $) }}
+    {{- end }}
     - backendRefs:
         - name: {{ include "keycloak.fullname" . }}
           port: {{ .Values.httpRoute.servicePort | default .Values.service.ports.http }}

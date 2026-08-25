@@ -185,6 +185,9 @@ httpRoute:
   ##     namespace: gateway-system
   ##     sectionName: https
   parentRefs: []
+  ## First entry also feeds KC_HOSTNAME, the hostname Keycloak advertises in
+  ## issuer and redirect URLs, mirroring what ingress.hostname does for Ingress.
+  ## Override with extraEnvVars if it must differ from the routed hostname.
   hostnames:
     - keycloak.local
   servicePort: ""
@@ -194,6 +197,15 @@ httpRoute:
         value: "{{ .Values.httpRelativePath }}"
   filters: []
   timeouts: {}
+  ## blockedPaths: path regexes answered with a 403 instead of being proxied.
+  ## Each entry renders one HTTPRoute rule, ahead of the backend rule, plus a
+  ## shared HTTPRouteFilter.
+  ## REQUIRES Envoy Gateway: directResponse is an Envoy Gateway extension, not
+  ## part of the Gateway API spec.
+  ## e.g:
+  ## blockedPaths:
+  ##   - "^/realms/[^/]+/metrics$"
+  blockedPaths: []
   extraRules: []
 
 ## Network Policy

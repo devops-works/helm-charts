@@ -25,7 +25,9 @@ data:
   KC_PROXY_HEADERS: {{ .Values.proxyHeaders | quote }}
   
   ## Hostname settings
-  {{- if and .Values.ingress.enabled .Values.ingress.hostname }}
+  {{- if and .Values.httpRoute.enabled .Values.httpRoute.hostnames }}
+  KC_HOSTNAME: {{ tpl (first .Values.httpRoute.hostnames) . | quote }}
+  {{- else if and .Values.ingress.enabled .Values.ingress.hostname }}
   KC_HOSTNAME: {{ tpl .Values.ingress.hostname . | quote }}
   {{- end }}
   KC_HOSTNAME_STRICT: {{ ternary "true" "false" .Values.hostnameStrict | quote }}
