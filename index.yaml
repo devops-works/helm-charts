@@ -3,9 +3,9 @@ entries:
   cert-manager-issuer:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2026-08-25T09:40:30.068165347Z"
+    created: "2026-10-28T08:53:35.359096048Z"
     description: A Helm chart for creating cluster issuers
-    digest: 6318eb4e51847b18ca73a456e337c59cba3cfbd7cea15a604ea82c1a20e8fa4d
+    digest: 995948a04b3d87378f305100e10a4c331b8e54b3278da62ff62183a8bbe16c4c
     name: cert-manager-issuer
     type: application
     urls:
@@ -14,10 +14,10 @@ entries:
   cyberchef:
   - apiVersion: v1
     appVersion: v9.24.7
-    created: "2026-08-25T09:40:30.068469869Z"
+    created: "2026-10-28T08:53:35.359388809Z"
     description: A Helm chart for cyberchef - the Cyber Swiss Army Knife web app for
       encryption, encoding, compression and data analysis.
-    digest: b593127fe94606f4e7e064d8eefcccd0f2a5337180b53ccf006568a1f1a0c410
+    digest: a24bd031bcbc8c929a07fe30d079a8007cf8888a39a1080529265da445fdc33b
     home: https://github.com/gchq/CyberChef/
     maintainers:
     - email: support@devops.works
@@ -79,9 +79,9 @@ entries:
   devopsworks-website:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-08-25T09:40:30.068783935Z"
+    created: "2026-10-28T08:53:35.359616815Z"
     description: DevOps.Works website helm chart
-    digest: d01fbb30ff1639fc23ba7c9dbd46adc943e1691707db49cc05ff5ad46d680ef0
+    digest: 0b66427bfce8834dca1f36bc92e2f1ec1d4100a575669b022740526a6505c7e9
     name: devopsworks-website
     type: application
     urls:
@@ -120,10 +120,10 @@ entries:
   echoip:
   - apiVersion: v1
     appVersion: v0.0.0
-    created: "2026-08-25T09:40:30.069017472Z"
+    created: "2026-10-28T08:53:35.359827182Z"
     description: A Helm chart for echoip - a simple service for looking up your IP
       address
-    digest: 412d968af467632f05a7e4cc54499eb3be432d0928ac0359c23b23b5636d96a6
+    digest: ea7c0af4febb7274e4a9d1c13dcecacbf926fa029f46f7365155d5959ada03ae
     home: https://github.com/mpolden/echoip/
     maintainers:
     - email: support@devops.works
@@ -201,9 +201,9 @@ entries:
   keycloak:
   - apiVersion: v2
     appVersion: 26.6.1
-    created: "2026-08-25T09:40:30.069906031Z"
+    created: "2026-10-28T08:53:35.360565998Z"
     description: Keycloak Helm chart for Kubernetes
-    digest: 2a4de001862dd43a089c16457b2eb1a0048af627865eedc336643ac431899d65
+    digest: 350bb0d45706f524fa5072d55848cc9024a432f1b0f63b3bb83513daf00a860f
     name: keycloak
     type: application
     urls:
@@ -262,9 +262,9 @@ entries:
   phpsecscan:
   - apiVersion: v2
     appVersion: 0.0.9
-    created: "2026-08-25T09:40:30.070193077Z"
+    created: "2026-10-28T08:53:35.360774663Z"
     description: A Helm chart to deploy phpsecscan in Kubernetes
-    digest: 8db44a2ef43e4087d9fe5df455c373d7dc7b3bd6a9fcd03b5c779876db77fa95
+    digest: f6022b8570402440fec9d0340cf7aaeca10cdb235fb5733dbe3d8dcc6e995264
     home: https://github.com/devops-works/phpsecscan
     maintainers:
     - email: support@devops.works
@@ -312,10 +312,10 @@ entries:
   rabbitmq-cluster-operator:
   - apiVersion: v2
     appVersion: v2.19.1
-    created: "2026-08-25T09:40:30.071200472Z"
+    created: "2026-10-28T08:53:35.361833973Z"
     description: Helm chart for the RabbitMQ Cluster Operator. Wraps the official
       upstream manifests from https://github.com/rabbitmq/cluster-operator
-    digest: cf6c2e1918023b2bbe5056211d1c42ea1cad5ea1ca8a58ab040edbe7cefd5607
+    digest: 51fdad20a8d7ed05ee7d2603ab041738dfe59b94d1c6270ec08b28957531d371
     home: https://github.com/rabbitmq/cluster-operator
     maintainers:
     - email: support@devops.works
@@ -347,9 +347,9 @@ entries:
   scan-exporter:
   - apiVersion: v2
     appVersion: v2.3.0
-    created: "2026-08-25T09:40:30.071840131Z"
+    created: "2026-10-28T08:53:35.362368789Z"
     description: A Helm chart to deploy scan-exporter in Kubernetes
-    digest: 413cdbbd1d362605d55713df29ad772c64620034887e20a157d5271abbc38bf2
+    digest: b1ec8c1d38f3096f25d496d2504a97afac7f97a2e1086c025f292d4f248b24ae
     home: https://github.com/devops-works/scan-exporter
     maintainers:
     - email: support@devops.works
@@ -636,6 +636,16 @@ entries:
     version: 1.0.0
   thanos:
   - apiVersion: v2
+    appVersion: 0.42.4
+    created: "2026-10-28T08:53:35.379185414Z"
+    description: Thanos Helm chart for long-term Prometheus metrics storage
+    digest: 348676d955a851f8ba02458fa25532d2f64b5c77090cdcd653a3dba275b57bd3
+    name: thanos
+    type: application
+    urls:
+    - https://devops-works.github.io/helm-charts/packages/thanos-1.0.3.tgz
+    version: 1.0.3
+  - apiVersion: v2
     appVersion: 0.41.0
     created: "2026-08-25T09:40:30.072642311Z"
     description: Thanos Helm chart for long-term Prometheus metrics storage
@@ -668,9 +678,9 @@ entries:
   uptimerobot:
   - apiVersion: v2
     appVersion: 0.4.4
-    created: "2026-08-25T09:40:30.078873445Z"
+    created: "2026-10-28T08:53:35.37941533Z"
     description: A Helm chart to deploy Uptime Robot exporter for Kubernetes
-    digest: e2b47d77c31ea3ab2f3ffb48d8e7f6ef4e6476b2567c3bbf3aff8d12aa73f507
+    digest: 769d0ebfe6d3d62eee9be255d53a19e9fdad345c71f6bbeb3645e7821ae88c32
     name: uptimerobot
     type: application
     urls:
@@ -716,4 +726,4 @@ entries:
     urls:
     - https://devops-works.github.io/helm-charts/packages/uptimerobot-0.0.1.tgz
     version: 0.0.1
-generated: "2026-08-25T09:40:30.066950214Z"
+generated: "2026-10-28T08:53:35.314600846Z"
