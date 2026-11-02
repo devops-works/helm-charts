@@ -39,8 +39,12 @@ spec:
     {{- toYaml . | nindent 4 }}
     {{- end }}
   {{- end }}
-  {{- if .Values.networkPolicy.extraIngress }}
   ingress:
-    {{- toYaml .Values.networkPolicy.extraIngress | nindent 4 }}
-  {{- end }}
+    # Admission webhooks, called by the kube-apiserver
+    - ports:
+        - port: 9443
+          protocol: TCP
+    {{- with .Values.networkPolicy.extraIngress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 {{- end }}

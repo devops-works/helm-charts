@@ -1,0 +1,30 @@
+## MutatingWebhookConfiguration: cluster-operator-mutating-webhook-configuration
+## Source: upstream cluster-operator.yml (v2.23.2)
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/cluster-operator-serving-cert
+  name: cluster-operator-mutating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: cluster-operator-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /mutate-rabbitmq-com-v1beta1-rabbitmqcluster
+  failurePolicy: Fail
+  name: mrabbitmqcluster-v1beta1.kb.io
+  rules:
+  - apiGroups:
+    - rabbitmq.com
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - rabbitmqclusters
+  sideEffects: None
+

@@ -1,9 +1,9 @@
 ## RabbitMQ Cluster Operator configuration
-## Based on upstream v2.19.1 manifests
+## Based on upstream v2.23.2 manifests
 
 image:
-  repository: rabbitmqoperator/cluster-operator
-  tag: "2.19.1"
+  repository: ghcr.io/rabbitmq/cluster-operator
+  tag: "2.23.2"
   pullPolicy: IfNotPresent
 
 replicas: 1
@@ -46,7 +46,7 @@ metrics:
     # Enable metrics service
     enabled: true
     # Service port for metrics
-    port: 9782
+    port: 8080
     # Annotations for the metrics service
     annotations: {}
 

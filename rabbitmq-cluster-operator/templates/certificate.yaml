@@ -1,0 +1,18 @@
+## Certificate: cluster-operator-serving-cert
+## Source: upstream cluster-operator.yml (v2.23.2)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    {{- include "rabbitmq-cluster-operator.labels" . | nindent 4 }}
+  name: cluster-operator-serving-cert
+  namespace: {{ .Release.Namespace }}
+spec:
+  dnsNames:
+  - cluster-operator-webhook-service.{{ .Release.Namespace }}.svc
+  - cluster-operator-webhook-service.{{ .Release.Namespace }}.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: selfsigned-issuer
+  secretName: cluster-operator-webhook-server-cert
+

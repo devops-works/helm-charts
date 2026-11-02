@@ -27,7 +27,22 @@ RELEASE_URL = (
 UPSTREAM_NAMESPACE = "rabbitmq-system"
 
 # Template files that are not generated from upstream and should be preserved.
-PRESERVED_TEMPLATES = {"_helpers.tpl", "NOTES.txt"}
+PRESERVED_TEMPLATES = {
+    "_helpers.tpl",
+    "NOTES.txt",
+    "metrics-service.yaml",
+    "networkpolicy.yaml",
+    "servicemonitor.yaml",
+}
+
+# Upstream resources replaced by chart-specific templates or unused.
+SKIPPED_RESOURCES = {
+    # Replaced by templates/metrics-service.yaml (optional, configurable port)
+    ("Service", "rabbitmq-cluster-operator-metrics-service"),
+    # Metrics are served over plain HTTP (no --metrics-secure), and upstream
+    # leaves kustomize placeholders in its dnsNames
+    ("Certificate", "metrics-certs"),
+}
 
 
 # ---------------------------------------------------------------------------
@@ -71,10 +86,23 @@ def split_documents(raw_text: str) -> list[tuple[dict, str]]:
 # ---------------------------------------------------------------------------
 
 def templatize_namespace(text: str) -> str:
-    """Replace hardcoded upstream namespace with Helm template directive."""
-    return text.replace(
+    """Replace hardcoded upstream namespace with Helm template directive.
+
+    Covers the namespace field, webhook certificate DNS names
+    (<service>.<namespace>.svc) and cert-manager CA injection annotations
+    (<namespace>/<certificate>).
+    """
+    text = text.replace(
         f"namespace: {UPSTREAM_NAMESPACE}",
         "namespace: {{ .Release.Namespace }}",
+    )
+    text = text.replace(
+        f".{UPSTREAM_NAMESPACE}.svc",
+        ".{{ .Release.Namespace }}.svc",
+    )
+    return text.replace(
+        f"inject-ca-from: {UPSTREAM_NAMESPACE}/",
+        "inject-ca-from: {{ .Release.Namespace }}/",
     )
 
 
@@ -100,7 +128,15 @@ def templatize_labels(text: str) -> str:
         r"\1  app\.kubernetes\.io/name: rabbitmq-cluster-operator\n"
         r"\1  app\.kubernetes\.io/part-of: rabbitmq\n"
     )
-    return re.sub(pattern, replace_fn, text)
+    text = re.sub(pattern, replace_fn, text)
+
+    # Webhook and cert-manager resources (since v2.22.0) carry kustomize labels
+    kustomize_pattern = (
+        r"( +)labels:\n"
+        r"\1  app\.kubernetes\.io/managed-by: kustomize\n"
+        r"\1  app\.kubernetes\.io/name: cluster-operator\n"
+    )
+    return re.sub(kustomize_pattern, replace_fn, text)
 
 
 # ---------------------------------------------------------------------------
@@ -148,7 +184,10 @@ def templatize_deployment(text: str) -> str:
         result,
     )
 
-    # SecurityContext block: replace content with toYaml
+    # Container securityContext block: replace content with toYaml.
+    # Only the first match: the pod-level securityContext that follows
+    # (since v2.22.0) keeps its upstream content, as container-only fields
+    # (allowPrivilegeEscalation, capabilities) are invalid at pod level.
     result = re.sub(
         r"(( +)securityContext:\n)(?:\2  .+\n)+",
         lambda m: (
@@ -156,6 +195,7 @@ def templatize_deployment(text: str) -> str:
             f"{m.group(2)}  {{{{- toYaml .Values.securityContext | nindent {len(m.group(2)) + 2} }}}}\n"
         ),
         result,
+        count=1,
     )
 
     # Pod labels: add podLabels block after the pod template labels include
@@ -278,6 +318,10 @@ def process_documents(
 
         if kind == "Namespace":
             print(f"    Skipping {kind}/{name} (Helm manages namespaces)")
+            continue
+
+        if (kind, name) in SKIPPED_RESOURCES:
+            print(f"    Skipping {kind}/{name} (see SKIPPED_RESOURCES)")
             continue
 
         if kind == "CustomResourceDefinition":

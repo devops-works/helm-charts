@@ -1,5 +1,5 @@
 ## Deployment: rabbitmq-cluster-operator
-## Source: upstream cluster-operator.yml (v2.19.1)
+## Source: upstream cluster-operator.yml (v2.23.2)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,7 +25,9 @@ spec:
       {{- end }}
     spec:
       containers:
-      - command:
+      - args:
+        - --health-probe-bind-address=:8081
+        command:
         - /manager
         env:
         - name: OPERATOR_NAMESPACE
@@ -34,15 +36,38 @@ spec:
               fieldPath: metadata.namespace
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
         name: operator
         ports:
-        - containerPort: 9782
+        - containerPort: 8080
           name: metrics
           protocol: TCP
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 10 }}
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cluster-operator-webhook-certs
+          readOnly: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: rabbitmq-cluster-operator
       terminationGracePeriodSeconds: 10
       {{- with .Values.nodeSelector }}
@@ -57,4 +82,8 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+      - name: cluster-operator-webhook-certs
+        secret:
+          secretName: cluster-operator-webhook-server-cert
 
